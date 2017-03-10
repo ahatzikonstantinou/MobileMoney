@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MobileMoney</string>
+    <string-array name="bank_names">
+        <item>Πειραιώς</item>
+        <item>Άλφα</item>
+        <item>Eurobank</item>
+        <item>Εθνική</item>
+    </string-array>
+</resources>
