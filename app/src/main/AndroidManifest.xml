@@ -2,6 +2,14 @@
 <manifest package="ahat.mobilemoney"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- <manifest package="ahat.mobilemoney" xmlns:android="http://schemas.android.com/apk/res-auto"> -->
+
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,25 +17,57 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity
+            android:name=".RegisterActivity"
+            android:label="@string/title_activity_register"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".Register_SMS_Pin_Activity"
+            android:label="@string/title_activity_register_sms_pin"
+            android:parentActivityName=".RegisterActivity">
+        </activity>
+        <activity
+            android:name=".AddBankActivity"
+            android:label="@string/title_activity_add_bank"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".EditBankActivity"
+            android:label="@string/title_activity_edit_bank"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".SaveImportedAccountsActivity"
+            android:label="@string/title_activity_save_imported_accounts"
+            android:parentActivityName=".EditBankActivity">
+        </activity>
+        <activity
+            android:name=".EditAccountsActivity"
+            android:label="@string/title_activity_edit_accounts"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:banner="@anim/abc_grow_fade_in_from_bottom"
+            android:label="@string/title_activity_login"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".NavigationDrawer"
+            android:label="@string/title_activity_navigation_drawer"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity android:name=".RegisterActivity">
-        </activity>
-        <activity android:name=".Register_SMS_Pin_Activity">
-        </activity>
-        <activity android:name=".AddBankActivity">
-        </activity>
-        <activity android:name=".BankActivity">
-        </activity>
-        <activity android:name=".EditBankActivity">
-        </activity>
-        <activity android:name=".SaveImportedAccountsActivity">
-        </activity>
-        <activity android:name=".EditAccountsActivity">
         </activity>
     </application>
 
