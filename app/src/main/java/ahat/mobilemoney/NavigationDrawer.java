@@ -48,7 +48,8 @@ public class NavigationDrawer extends AppCompatActivity
 
         if( !Utils.UserIsRegistered() )
         {
-            Intent intent = new Intent( this, RegisterActivity.class );
+//            Intent intent = new Intent( this, RegisterActivity.class );
+            Intent intent = new Intent( this, AddBankActivity.class );
             startActivity( intent );
         }
     }
@@ -109,7 +110,7 @@ public class NavigationDrawer extends AppCompatActivity
         }
         else if( id == R.id.nav_banks )
         {
-            Intent intent = new Intent( this, EditBankActivity.class );
+            Intent intent = new Intent( this, BanksActivity.class );
             startActivity( intent );
         }
         else if( id == R.id.nav_accounts )

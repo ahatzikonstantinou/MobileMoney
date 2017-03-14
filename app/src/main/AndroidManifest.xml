@@ -17,11 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN"/> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".RegisterActivity"
@@ -36,12 +38,12 @@
         <activity
             android:name=".AddBankActivity"
             android:label="@string/title_activity_add_bank"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".BanksActivity">
         </activity>
         <activity
             android:name=".EditBankActivity"
             android:label="@string/title_activity_edit_bank"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".BanksActivity">
         </activity>
         <activity
             android:name=".SaveImportedAccountsActivity"
@@ -68,6 +70,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".BanksActivity"
+            android:label="@string/title_activity_banks"
+            android:parentActivityName=".MainActivity"
+            >
         </activity>
     </application>
 

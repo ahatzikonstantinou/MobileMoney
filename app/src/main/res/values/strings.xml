@@ -6,6 +6,13 @@
         <item>Eurobank</item>
         <item>Εθνική</item>
     </string-array>
+    <array name="bank_logos">
+        <item>@drawable/piraeusbank_en_new</item>
+        <item>@drawable/alphabank_400x400</item>
+        <item>@drawable/efg_eurobank_ergasias_squarelogo_1423814513987</item>
+        <item>@drawable/ethniki</item>
+    </array>
+
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
@@ -40,4 +47,8 @@
     <string name="action_pay">Pay</string>
     <string name="action_collect">Collect</string>
     <string name="nav_configure">Configure</string>
+    <string name="test_bank_dialog_title">Test Bank Credentials</string>
+    <string name="test_bank_dialog_msg">Exercise caution when testing crdentials. A Credentials testing is a login in the bank\'s web banking system. Banks lock an account after a number of invalid login attempts.</string>
+    <string name="bank_credentials_encryption_msg">Your credentials will be encrypted and stored in your mobile device. They will be used only after fingerprint verification.</string>
+    <string name="title_activity_banks">BanksActivity</string>
 </resources>
