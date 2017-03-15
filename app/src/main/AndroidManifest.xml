@@ -75,6 +75,7 @@
             android:name=".BanksActivity"
             android:label="@string/title_activity_banks"
             android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             >
         </activity>
     </application>

@@ -2,11 +2,13 @@ package ahat.mobilemoney;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,12 +20,14 @@ import java.util.List;
 public class BanksActivityListAdapter extends BaseAdapter
 {
     private final List<BanksActivityListItem> banksActivityListItems;
+    private ListView listView;
     private final Context context;
 
-    public BanksActivityListAdapter( Context context, List<BanksActivityListItem> banksActivityListItems )
+    public BanksActivityListAdapter( Context context, List<BanksActivityListItem> banksActivityListItems, ListView listView )
     {
         this.context = context;
         this.banksActivityListItems = banksActivityListItems;
+        this.listView = listView;
     }
     @Override
     public int getCount()
@@ -43,6 +47,11 @@ public class BanksActivityListAdapter extends BaseAdapter
         return banksActivityListItems.indexOf( getItem( position ) );
     }
 
+    public ListView getListView()
+    {
+        return listView;
+    }
+
     private class  ViewHolder
     {
         ImageView bankLogo;
@@ -50,7 +59,7 @@ public class BanksActivityListAdapter extends BaseAdapter
     }
 
     @Override
-    public View getView( int position, View convertView, ViewGroup parent )
+    public View getView( final int position, View convertView, ViewGroup parent )
     {
         ViewHolder viewHolder = null;
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Activity.LAYOUT_INFLATER_SERVICE );
@@ -59,6 +68,16 @@ public class BanksActivityListAdapter extends BaseAdapter
             convertView = inflater.inflate( R.layout.content_banks_list_item, null );
             viewHolder = new ViewHolder();
             viewHolder.bankLogo = (ImageView) convertView.findViewById( R.id.activity_banks_list_bank_logo );
+            viewHolder.bankLogo.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick( View v )
+                        {
+                            ListView lv = (ListView) v.getParent().getParent();
+                            lv.setItemChecked(position, !lv.isItemChecked(position));
+                        }
+                    }
+            );
             viewHolder.bankName = (TextView) convertView.findViewById( R.id.activity_banks_list_bank_name );
 
             BanksActivityListItem item = banksActivityListItems.get( position );

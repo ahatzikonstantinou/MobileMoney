@@ -29,19 +29,18 @@ public class AddBankActivity extends AppCompatActivity
     public void testBankCredentials( View view )
     {
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
-       builder.setMessage(R.string.test_bank_dialog_msg)
-              .setTitle(R.string.test_bank_dialog_title)
-               .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-                                       @Override
-                                       public void onClick( DialogInterface dialog, int which )
-                                       {
-                                           // TODO: do the credentials test
-                                       }
+        builder.setMessage(R.string.test_bank_dialog_msg)
+            .setTitle(R.string.test_bank_dialog_title)
+            .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+                                   @Override
+                                   public void onClick( DialogInterface dialog, int which )
+                                   {
+                                       // TODO: do the credentials test
                                    }
-               )
-              .setNegativeButton( android.R.string.cancel, null )
-              .setIcon( R.drawable.ic_warning_black_24dp )
-              .create()
-               .show();
+                               }
+            )
+            .setNegativeButton( android.R.string.cancel, null )
+            .setIcon( R.drawable.ic_warning_black_24dp )
+            .create().show();
     }
 }
