@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +18,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ahat.mobilemoney.Banking.BankDTO;
+import ahat.mobilemoney.Storage.StorageProxy;
 
 public class BanksActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
@@ -48,9 +50,15 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
             }
         } );
 
-        String[] names = getResources().getStringArray( R.array.bank_names );
+        setupBanksList();
+    }
+
+    private void setupBanksList()
+    {
+//        String[] names = getResources().getStringArray( R.array.bank_names );
+        String[] names = getBanksInfo();
         TypedArray logos = getResources().obtainTypedArray( R.array.bank_logos );
-        banksActivityListItems = new ArrayList<BanksActivityListItem>();
+        banksActivityListItems = new ArrayList<>();
         for( int i = 0 ; i < names.length ; i++ )
         {
             banksActivityListItems.add( new BanksActivityListItem( names[i], logos.getResourceId(i, -1) ) );
@@ -58,6 +66,19 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
         listView = (ListView) findViewById( R.id.activity_banks_list);
         listView.setAdapter( new BanksActivityListAdapter( this, banksActivityListItems, listView ) );
         listView.setOnItemClickListener( this );
+    }
+
+    private String[] getBanksInfo()
+    {
+
+        StorageProxy storageProxy = new StorageProxy( getApplicationContext() );
+        List<BankDTO> banks = storageProxy.GetAllBanksNoTasks();
+        String[] names = new String[banks.size()];
+        for( int i = 0 ; i < banks.size() ; i++ )
+        {
+            names[i] = banks.get( i ).getName();
+        }
+        return names;
     }
 
     @Override
@@ -85,6 +106,9 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
     {
         switch( item.getItemId() )
         {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.action_delete_bank:
                 AlertDialog.Builder builder = new AlertDialog.Builder( this );
                 builder.setMessage(R.string.delete_bank_dialog_msg)
@@ -111,6 +135,8 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
                        .setIcon( R.drawable.ic_warning_black_24dp )
                        .create().show();
                 break;
+            default:
+                return super.onOptionsItemSelected(item);
         }
         return true;
     }

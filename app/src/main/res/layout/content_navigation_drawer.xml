@@ -9,4 +9,15 @@
     tools:context="ahat.mobilemoney.NavigationDrawer"
     tools:showIn="@layout/app_bar_navigation_drawer">
 
+    <TextView
+        android:id="@+id/MsgTextView"
+        android:layout_width="0dp"
+        android:layout_height="22dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 </android.support.constraint.ConstraintLayout>

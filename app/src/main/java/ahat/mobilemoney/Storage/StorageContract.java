@@ -1,4 +1,4 @@
-package ahat.mobilemoney;
+package ahat.mobilemoney.Storage;
 
 import android.provider.BaseColumns;
 
@@ -14,10 +14,12 @@ public final class StorageContract
     /*
      * Table Bank
      */
-    public static class Bank implements BaseColumns
+    public static class DBBank implements BaseColumns
     {
         public final static String TABLE_NAME = "bank";
         public final static String COLUMN_NAME_NAME = "name";
+        public final static String COLUMN_NAME_CODE = "code";
+        public final static String COLUMN_NAME_VERSION = "version";
         public final static String COLUMN_NAME_USERNAME = "username";
         public final static String COLUMN_NAME_PASSWORD = "password";
     }

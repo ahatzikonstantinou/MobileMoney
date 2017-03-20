@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.READ_PROFILE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -74,7 +75,7 @@
         <activity
             android:name=".BanksActivity"
             android:label="@string/title_activity_banks"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".NavigationDrawer"
             android:theme="@style/AppTheme.NoActionBar">
             >
         </activity>

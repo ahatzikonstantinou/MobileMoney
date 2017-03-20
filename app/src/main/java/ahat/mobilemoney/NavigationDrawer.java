@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class NavigationDrawer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -46,12 +47,16 @@ public class NavigationDrawer extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById( R.id.nav_view );
         navigationView.setNavigationItemSelectedListener( this );
 
-        if( !Utils.UserIsRegistered() )
-        {
-//            Intent intent = new Intent( this, RegisterActivity.class );
-            Intent intent = new Intent( this, AddBankActivity.class );
-            startActivity( intent );
-        }
+        // Background service for initializing the local db of banks
+        UpdateBanks updateBanksTask = new UpdateBanks( getApplicationContext(), (TextView) findViewById( R.id.MsgTextView ) );
+        updateBanksTask.execute();
+
+//        if( !Utils.UserIsRegistered() )
+//        {
+////            Intent intent = new Intent( this, RegisterActivity.class );
+//            Intent intent = new Intent( this, AddBankActivity.class );
+//            startActivity( intent );
+//        }
     }
 
     @Override
