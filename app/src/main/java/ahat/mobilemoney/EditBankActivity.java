@@ -1,6 +1,7 @@
 package ahat.mobilemoney;
 
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,7 +58,7 @@ public class EditBankActivity extends AppCompatActivity
             @Override
             public void onTextChanged( CharSequence s, int start, int before, int count )
             {
-                storeCredentialsButton.setEnabled( 0 < s.toString().trim().length() );
+                checkDisableStoreCredentialsButton();
             }
 
             @Override
@@ -91,7 +92,7 @@ public class EditBankActivity extends AppCompatActivity
             @Override
             public void onTextChanged( CharSequence s, int start, int before, int count )
             {
-                storeCredentialsButton.setEnabled( 0 < s.toString().trim().length() );
+                checkDisableStoreCredentialsButton();
             }
 
             @Override
@@ -101,6 +102,16 @@ public class EditBankActivity extends AppCompatActivity
             }
         } );
 
+        checkDisableStoreCredentialsButton();
+    }
+
+    private void checkDisableStoreCredentialsButton()
+    {
+        boolean enable = 0 < usernameTV.getText().toString().trim().length() && 0 < passwordTV.getText().toString().trim().length();
+        storeCredentialsButton.setEnabled( enable );
+        storeCredentialsButton.setClickable( enable );
+        Drawable icon = storeCredentialsButton.getCompoundDrawables()[1];
+        icon.setAlpha( enable ? 255 : 38 ); //255: fully opaque, 0: fully transparent
     }
 
     public void testBankCredentials( View view )
