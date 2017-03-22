@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MobileMoney</string>
+    <string name="app_name">Mobile Money</string>
     <string-array name="bank_names">
         <item>Πειραιώς</item>
         <item>Άλφα</item>

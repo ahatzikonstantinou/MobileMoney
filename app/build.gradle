@@ -35,6 +35,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile files('libs/activeandroid-3.0.jar')
     testCompile 'junit:junit:4.12'
+    provided files('libs/pass-v1.2.2.jar')
+    provided files('libs/sdk-v1.0.0.jar')
 }

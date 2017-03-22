@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -23,6 +25,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.samsung.android.sdk.SsdkUnsupportedException;
+import com.samsung.android.sdk.pass.Spass;
+import com.samsung.android.sdk.pass.SpassFingerprint;
 
 import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
@@ -141,45 +147,75 @@ public class EditBankActivity extends AppCompatActivity {
             return;
         }
 
-        FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(Context.FINGERPRINT_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED)
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
-            enableFingerprint( false );
+            FingerprintManager fingerprintManager = (FingerprintManager) getSystemService( Context.FINGERPRINT_SERVICE );
 
-            //from https://developer.android.com/training/permissions/requesting.html
-            if( ActivityCompat.shouldShowRequestPermissionRationale( this, Manifest.permission.USE_FINGERPRINT ) )
+            if( ActivityCompat.checkSelfPermission( this, Manifest.permission.USE_FINGERPRINT ) != PackageManager.PERMISSION_GRANTED )
             {
-                // show an explanation
-                Toast.makeText( this, R.string.needFingerprintPermission, Toast.LENGTH_LONG ).show();
+                enableFingerprint( false );
+
+                //from https://developer.android.com/training/permissions/requesting.html
+                if( ActivityCompat.shouldShowRequestPermissionRationale( this, Manifest.permission.USE_FINGERPRINT ) )
+                {
+                    // show an explanation
+                    Toast.makeText( this, R.string.needFingerprintPermission, Toast.LENGTH_LONG ).show();
+                }
+                else
+                {
+                    ActivityCompat.requestPermissions( this, new String[]{ Manifest.permission.USE_FINGERPRINT }, MY_PERMISSIONS_REQUEST_USE_FINGERPRINT );
+                }
+                return;
+            }
+            if( !fingerprintManager.isHardwareDetected() )
+            {
+                // Device doesn't support fingerprint authentication
+                enableFingerprint( false );
+            }
+            else if( !fingerprintManager.hasEnrolledFingerprints() )
+            {
+                // User hasn't enrolled any fingerprints to authenticate with
+                enableFingerprint( false );
+                new AlertDialog.Builder( this ).
+                                                       setMessage( R.string.enrollFingeprints ).
+                                                       setTitle( R.string.info ).
+                                                       setIcon( android.R.drawable.ic_dialog_info ).
+                                                       setPositiveButton( android.R.string.ok, null ).
+                                                       create().
+                                                       show();
             }
             else
             {
-                ActivityCompat.requestPermissions( this, new String[]{ Manifest.permission.USE_FINGERPRINT }, MY_PERMISSIONS_REQUEST_USE_FINGERPRINT );
+                // Everything is ready for fingerprint authentication
+                enableFingerprint( true );
             }
-            return;
         }
-        if (!fingerprintManager.isHardwareDetected())
+        else if( Build.BRAND.toLowerCase().equals( "samsung" ) )
         {
-            // Device doesn't support fingerprint authentication
-            enableFingerprint( false );
-        }
-        else if (!fingerprintManager.hasEnrolledFingerprints())
-        {
-            // User hasn't enrolled any fingerprints to authenticate with
-            enableFingerprint( false );
-            new AlertDialog.Builder( this ).
-                    setMessage( R.string.enrollFingeprints ).
-                    setTitle( R.string.info ).
-                    setIcon( android.R.drawable.ic_dialog_info ).
-                    setPositiveButton( android.R.string.ok, null ).
-                    create().
-                    show();
-        }
-        else
-        {
-            // Everything is ready for fingerprint authentication
-            enableFingerprint( true );
+            Spass mSpass = new Spass();
+            try
+            {
+                mSpass.initialize(this);
+            }
+            catch (SsdkUnsupportedException e)
+            {
+                Log.e( "Fingerprint", e.getLocalizedMessage() );
+            }
+            catch (UnsupportedOperationException e)
+            {
+                Log.e( "Fingerprint", e.getLocalizedMessage() );
+            }
+            boolean isFeatureEnabled = mSpass.isFeatureEnabled(Spass.DEVICE_FINGERPRINT);
+            if(isFeatureEnabled)
+            {
+                SpassFingerprint mSpassFingerprint = new SpassFingerprint( this);
+                boolean mHasRegisteredFinger = mSpassFingerprint.hasRegisteredFinger();
+                Log.d( "Fingerprint", "mHasRegisteredFinger: " + mHasRegisteredFinger );
+            }
+            else
+            {
+                Log.d( "Fingerprint", "Fingerprint Service is not supported in the device.");
+            }
         }
     }
 
