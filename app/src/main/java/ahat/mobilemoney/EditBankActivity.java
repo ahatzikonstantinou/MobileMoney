@@ -1,10 +1,16 @@
 package ahat.mobilemoney;
 
+import android.Manifest;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.hardware.fingerprint.FingerprintManager;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
@@ -22,87 +28,159 @@ import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankService;
 
-public class EditBankActivity extends AppCompatActivity
-{
+public class EditBankActivity extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_USE_FINGERPRINT = 1024;
     private BankDTO bankDTO;
     EditText passwordTV;
     EditText usernameTV;
     Button storeCredentialsButton;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState )
-    {
-        super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_edit_bank );
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_bank);
 
-        bankDTO = ( BankDTO ) getIntent().getSerializableExtra( "bankDTO" );
+        bankDTO = (BankDTO) getIntent().getSerializableExtra("bankDTO");
 
-        ImageView bankLogo = (ImageView) findViewById( R.id.activity_edit_bank_bank_logo );
-        bankLogo.setImageResource( BankService.GetBankLogo( this, bankDTO ) );
+        ImageView bankLogo = (ImageView) findViewById(R.id.activity_edit_bank_bank_logo);
+        bankLogo.setImageResource(BankService.GetBankLogo(this, bankDTO));
 
-        storeCredentialsButton = (Button) findViewById( R.id.edit_bank_credentials_store_button );
+        storeCredentialsButton = (Button) findViewById(R.id.edit_bank_credentials_store_button);
 
-        TextView bankName = (TextView) findViewById( R.id.activity_edit_bank_bank_name );
-        bankName.setText( bankDTO.getName() );
+        TextView bankName = (TextView) findViewById(R.id.activity_edit_bank_bank_name);
+        bankName.setText(bankDTO.getName());
 
-        Bank bank = BankService.GetBank( this, bankDTO );
-        passwordTV = (EditText) findViewById( R.id.editTextPassword );
-        passwordTV.setText( bank.getPassword() );
-        passwordTV.addTextChangedListener( new TextWatcher() {
+        Bank bank = BankService.GetBank(this, bankDTO);
+        passwordTV = (EditText) findViewById(R.id.editTextPassword);
+        passwordTV.setText(bank.getPassword());
+        passwordTV.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged( CharSequence s, int start, int count, int after )
-            {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
             @Override
-            public void onTextChanged( CharSequence s, int start, int before, int count )
-            {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 checkDisableStoreCredentialsButton();
             }
 
             @Override
-            public void afterTextChanged( Editable s )
-            {
+            public void afterTextChanged(Editable s) {
 
             }
-        } );
-        CheckBox showPasswordCheckBox = (CheckBox) findViewById( R.id.showPasswordCheckBox );
+        });
+        CheckBox showPasswordCheckBox = (CheckBox) findViewById(R.id.showPasswordCheckBox);
         showPasswordCheckBox.setOnCheckedChangeListener(
-            new CompoundButton.OnCheckedChangeListener()
-            {
-                 @Override
-                 public void onCheckedChanged( CompoundButton buttonView, boolean isChecked )
-                 {
-                    passwordTV.setTransformationMethod( ( isChecked ? null : new PasswordTransformationMethod() ) );
-                 }
-            }
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        passwordTV.setTransformationMethod((isChecked ? null : new PasswordTransformationMethod()));
+                    }
+                }
 
         );
 
-        usernameTV = (EditText) findViewById( R.id.editTextUsername );
-        usernameTV.setText( bank.getUsername() );
-        usernameTV.addTextChangedListener( new TextWatcher() {
+        usernameTV = (EditText) findViewById(R.id.editTextUsername);
+        usernameTV.setText(bank.getUsername());
+        usernameTV.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged( CharSequence s, int start, int count, int after )
-            {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
             @Override
-            public void onTextChanged( CharSequence s, int start, int before, int count )
-            {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 checkDisableStoreCredentialsButton();
             }
 
             @Override
-            public void afterTextChanged( Editable s )
-            {
+            public void afterTextChanged(Editable s) {
 
             }
-        } );
+        });
 
         checkDisableStoreCredentialsButton();
+
+        checkFingerprintAvailability();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults )
+    {
+        switch( requestCode )
+        {
+            case MY_PERMISSIONS_REQUEST_USE_FINGERPRINT:
+                // If request is cancelled, the result arrays are empty.
+                enableFingerprint( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED );
+        }
+    }
+
+    private void enableFingerprint(boolean enable)
+    {
+        ImageView imageViewFingeprint = (ImageView) findViewById( R.id.imageViewFingeprint);
+        CheckBox checkBoxUseFingerprint = (CheckBox) findViewById( R.id.checkBoxUseFingerprint );
+        imageViewFingeprint.setAlpha( enable ? 255: 38 );
+        checkBoxUseFingerprint.setEnabled( enable );
+    }
+
+    private void checkFingerprintAvailability()
+    {
+        KeyguardManager keyguardManager = (KeyguardManager ) getSystemService(Context.KEYGUARD_SERVICE);
+        if( !keyguardManager.isKeyguardSecure() )
+        {
+            // Show a message that the user hasn't set up a fingerprint or lock screen.
+            enableFingerprint( false );
+            new AlertDialog.Builder( this ).
+                    setMessage( R.string.setupLockScreen ).
+                    setTitle( R.string.info ).
+                    setIcon( android.R.drawable.ic_dialog_info ).
+                    setPositiveButton( android.R.string.ok, null ).
+                    create().
+                    show();
+            return;
+        }
+
+        FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(Context.FINGERPRINT_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED)
+        {
+            enableFingerprint( false );
+
+            //from https://developer.android.com/training/permissions/requesting.html
+            if( ActivityCompat.shouldShowRequestPermissionRationale( this, Manifest.permission.USE_FINGERPRINT ) )
+            {
+                // show an explanation
+                Toast.makeText( this, R.string.needFingerprintPermission, Toast.LENGTH_LONG ).show();
+            }
+            else
+            {
+                ActivityCompat.requestPermissions( this, new String[]{ Manifest.permission.USE_FINGERPRINT }, MY_PERMISSIONS_REQUEST_USE_FINGERPRINT );
+            }
+            return;
+        }
+        if (!fingerprintManager.isHardwareDetected())
+        {
+            // Device doesn't support fingerprint authentication
+            enableFingerprint( false );
+        }
+        else if (!fingerprintManager.hasEnrolledFingerprints())
+        {
+            // User hasn't enrolled any fingerprints to authenticate with
+            enableFingerprint( false );
+            new AlertDialog.Builder( this ).
+                    setMessage( R.string.enrollFingeprints ).
+                    setTitle( R.string.info ).
+                    setIcon( android.R.drawable.ic_dialog_info ).
+                    setPositiveButton( android.R.string.ok, null ).
+                    create().
+                    show();
+        }
+        else
+        {
+            // Everything is ready for fingerprint authentication
+            enableFingerprint( true );
+        }
     }
 
     private void checkDisableStoreCredentialsButton()
