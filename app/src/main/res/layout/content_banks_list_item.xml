@@ -10,7 +10,7 @@
         android:id="@+id/activity_banks_list_bank_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="26dp"
         android:layout_marginRight="0dp"
         android:layout_marginStart="8dp"
         android:text="TextView"
@@ -19,7 +19,7 @@
         app:layout_constraintRight_toLeftOf="@+id/imageButton2"
         tools:text="Πειραιώς"
         app:layout_constraintLeft_toRightOf="@+id/activity_banks_list_bank_logo"
-        android:layout_marginLeft="32dp"/>
+        android:layout_marginLeft="12dp"/>
 
     <ImageView
         android:id="@+id/activity_banks_list_bank_logo"
@@ -36,7 +36,7 @@
         />
 
     <Button
-        android:id="@+id/button19"
+        android:id="@+id/activity_banks_list_delete"
         style="@android:style/Widget.Material.Button.Borderless"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -50,7 +50,7 @@
         app:layout_constraintRight_toRightOf="parent"/>
 
     <Button
-        android:id="@+id/button20"
+        android:id="@+id/activity_banks_list_edit"
         style="@android:style/Widget.Material.Button.Borderless"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -59,7 +59,7 @@
         android:layout_marginStart="8dp"
         android:focusable="false"
         android:drawableLeft="@drawable/ic_edit_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button19"
-        app:layout_constraintRight_toLeftOf="@+id/button19"/>
+        app:layout_constraintBottom_toBottomOf="@+id/activity_banks_list_delete"
+        app:layout_constraintRight_toLeftOf="@+id/activity_banks_list_delete"/>
 
 </android.support.constraint.ConstraintLayout>

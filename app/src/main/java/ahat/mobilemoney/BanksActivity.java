@@ -1,14 +1,10 @@
 package ahat.mobilemoney;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ahat.mobilemoney.Banking.BankDTO;
-import ahat.mobilemoney.Storage.StorageProxy;
+import ahat.mobilemoney.Banking.BankService;
 
 public class BanksActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
@@ -53,32 +49,12 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
         setupBanksList();
     }
 
-    private void setupBanksList()
+    public void setupBanksList()
     {
-//        String[] names = getResources().getStringArray( R.array.bank_names );
-        String[] names = getBanksInfo();
-        TypedArray logos = getResources().obtainTypedArray( R.array.bank_logos );
-        banksActivityListItems = new ArrayList<>();
-        for( int i = 0 ; i < names.length ; i++ )
-        {
-            banksActivityListItems.add( new BanksActivityListItem( names[i], logos.getResourceId(i, -1) ) );
-        }
+        banksActivityListItems = Utils.GetBanksActivityListItems( this );
         listView = (ListView) findViewById( R.id.activity_banks_list);
         listView.setAdapter( new BanksActivityListAdapter( this, banksActivityListItems, listView ) );
         listView.setOnItemClickListener( this );
-    }
-
-    private String[] getBanksInfo()
-    {
-
-        StorageProxy storageProxy = new StorageProxy( getApplicationContext() );
-        List<BankDTO> banks = storageProxy.GetAllBanksNoTasks();
-        String[] names = new String[banks.size()];
-        for( int i = 0 ; i < banks.size() ; i++ )
-        {
-            names[i] = banks.get( i ).getName();
-        }
-        return names;
     }
 
     @Override
@@ -90,8 +66,7 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
     @Override
     public void onItemClick( AdapterView<?> parent, View view, int position, long id )
     {
-        String bankName = banksActivityListItems.get( position ).getBankName();
-        Toast.makeText( getApplicationContext(), "" + bankName, Toast.LENGTH_LONG ).show();
+        editBank( banksActivityListItems.get( position ).getBankDTO() );
     }
 
     @Override
@@ -109,35 +84,43 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
             case android.R.id.home:
                 finish();
                 break;
-            case R.id.action_delete_bank:
-                AlertDialog.Builder builder = new AlertDialog.Builder( this );
-                builder.setMessage(R.string.delete_bank_dialog_msg)
-                       .setTitle(R.string.delete_bank_dialog_title)
-                       .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-                                               @Override
-                                               public void onClick( DialogInterface dialog, int which )
-                                               {
-                                                   // TODO: do the bank delete
-                                                   SparseBooleanArray checked = listView.getCheckedItemPositions();
-                                                   String bankNames = "";
-                                                   for( int i = 0 ; i < listView.getAdapter().getCount() ; i++ )
-                                                   {
-                                                       if( checked.get( i ) )
-                                                       {
-                                                           bankNames = getResources().getStringArray( R.array.bank_names )[item.getOrder()] + ", ";
-                                                       }
-                                                   }
-                                                   Toast.makeText( getApplicationContext(), "Deleting banks " + bankNames.substring( 0, bankNames.length()-2 ), Toast.LENGTH_LONG ).show();
-                                               }
-                                           }
-                       )
-                       .setNegativeButton( android.R.string.cancel, null )
-                       .setIcon( R.drawable.ic_warning_black_24dp )
-                       .create().show();
-                break;
+//            case R.id.action_delete_bank:
+//                AlertDialog.Builder builder = new AlertDialog.Builder( this );
+//                builder.setMessage(R.string.delete_bank_dialog_msg)
+//                       .setTitle(R.string.delete_bank_dialog_title)
+//                       .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+//                                               @Override
+//                                               public void onClick( DialogInterface dialog, int which )
+//                                               {
+//                                                   // TODO: do the bank delete
+//                                                   SparseBooleanArray checked = listView.getCheckedItemPositions();
+//                                                   String bankNames = "";
+//                                                   for( int i = 0 ; i < listView.getAdapter().getCount() ; i++ )
+//                                                   {
+//                                                       if( checked.get( i ) )
+//                                                       {
+//                                                           bankNames = getResources().getStringArray( R.array.bank_names )[item.getOrder()] + ", ";
+//                                                       }
+//                                                   }
+//                                                   Toast.makeText( getApplicationContext(), "Deleting banks " + bankNames.substring( 0, bankNames.length()-2 ), Toast.LENGTH_LONG ).show();
+//                                               }
+//                                           }
+//                       )
+//                       .setNegativeButton( android.R.string.cancel, null )
+//                       .setIcon( R.drawable.ic_warning_black_24dp )
+//                       .create().show();
+//                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    public void editBank( BankDTO bankDTO )
+    {
+        Intent intent = new Intent( this, EditBankActivity.class );
+        intent.putExtra( "bankDTO", bankDTO );
+        startActivity( intent );
+//        Toast.makeText( this, "Edit bank " + bankDTO.getName(), Toast.LENGTH_LONG ).show();
     }
 }

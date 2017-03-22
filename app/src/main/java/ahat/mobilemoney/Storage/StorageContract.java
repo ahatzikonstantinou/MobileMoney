@@ -22,6 +22,7 @@ public final class StorageContract
         public final static String COLUMN_NAME_VERSION = "version";
         public final static String COLUMN_NAME_USERNAME = "username";
         public final static String COLUMN_NAME_PASSWORD = "password";
+        public final static String COLUMN_NAME_ACTIVE = "active";
     }
 
 }

@@ -50,10 +50,11 @@
     <string name="test_bank_dialog_title">Test Bank Credentials</string>
     <string name="test_bank_dialog_msg">Exercise caution when testing credentials. A Credentials testing is a login in the bank\'s web banking system. Banks lock an account after a number of invalid login attempts.</string>
     <string name="bank_credentials_encryption_msg">Your credentials will be encrypted and stored in your mobile device. They will be used only after fingerprint verification.</string>
-    <string name="title_activity_banks">BanksActivity</string>
+    <string name="title_activity_banks">Banks</string>
     <string name="action_delete_bank">Delete</string>
     <string name="delete_bank_dialog_msg">Are you sure you want to delete the bank? All associated accounts will be deleted too.</string>
     <string name="delete_bank_dialog_title">Delete Bank</string>
     <string name="action_add_bank">Add</string>
     <string name="action_test_bank">Test</string>
+    <string name="show_password">Show password</string>
 </resources>

@@ -7,6 +7,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ahat.mobilemoney.Banking.BankDTO;
+import ahat.mobilemoney.Banking.BankService;
 import ahat.mobilemoney.Banking.BankShort;
 import ahat.mobilemoney.Storage.StorageProxy;
 
@@ -69,16 +70,13 @@ public class UpdateBanks extends AsyncTask<Void, Void, Long >
                 if( e.getCode().equals( newBank.getCode() ) )
                 {
                     exists = true;
+                    storageProxy.Update( BankService.UpdateFromPlatform( context, e, newBank ) );
                     break;
                 }
             }
             if( !exists )
             {
                 storageProxy.SaveNew( newBank );
-            }
-            else
-            {
-                storageProxy.Update( newBank );
             }
         }
     }

@@ -1,5 +1,6 @@
 package ahat.mobilemoney.Banking;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,18 +8,20 @@ import java.util.List;
  * This is the class that is exchanged during communications between the application and the platform.
  */
 
-public class BankDTO
+public class BankDTO implements Serializable
 {
     private long       version;
     private String     name;
     private String     code;
+    private boolean    active;
     private List<Task> tasks;
 
-    public BankDTO( long version, String name, String code, List<Task> tasks )
+    public BankDTO( long version, String name, String code, boolean active, List<Task> tasks )
     {
         this.version = version;
         this.name = name;
         this.code = code;
+        this.active = active;
         this.tasks = tasks;
     }
 
@@ -60,5 +63,15 @@ public class BankDTO
     public void setTasks( List<Task> tasks )
     {
         this.tasks = tasks;
+    }
+
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    public void setActive( boolean active )
+    {
+        this.active = active;
     }
 }

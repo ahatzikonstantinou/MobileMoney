@@ -21,9 +21,9 @@ public class Platform
      */
     public static List<BankDTO> GetBankList( List<BankShort> currentBanks )
     {
-        // TODO: replace with that actually gets this information from the platform with a web request
+        // TODO: replace with information that comes from the platform with a web request
         return Arrays.asList(
-                new BankDTO( 1, "Alpha Bank", "00A",
+                new BankDTO( 1, "Alpha Bank", "00A", false,
                              Arrays.asList(
                                      new Task(
                                              Task.Code.TestLogin,
@@ -35,10 +35,28 @@ public class Platform
                                      )
                              )
                 ),
-                new BankDTO( 1, "Piraeus", "00P", null ),
-                new BankDTO( 1, "Eurobank", "0EU", null ),
-                new BankDTO( 1, "Ethniki", "00E", null )
+                new BankDTO( 1, "Piraeus", "00P", false, null ),
+                new BankDTO( 1, "Eurobank", "0EU", false, null ),
+                new BankDTO( 1, "Ethniki", "00E", false, null )
         );
+    }
+
+    /**
+     * This function returns false for banks that have changed some of their pages so there is risk of a crash
+     * @param code
+     * @return
+     */
+    public static boolean BankIsEnabled( String code )
+    {
+        // TODO: replace with information that comes from the platform with a web request
+        switch( code )
+        {
+            case "00A": return false;
+            case "00P": return true;
+            case "0EU": return true;
+            case "00E": return true;
+        }
+        return false;
     }
 
 
