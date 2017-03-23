@@ -30,8 +30,11 @@ public class AddBankActivity extends AppCompatActivity implements AdapterView.On
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_add_bank );
+        setListview();
+    }
 
-        // setup the listview
+    private void setListview()
+    {
         banksActivityListItems = Utils.GetAddBanksActivityListItems( this );
         listView = (ListView) findViewById( R.id.activity_add_bank_list);
         listView.setAdapter( new AddBankActivityListAdapter( this, banksActivityListItems ) );
@@ -59,5 +62,17 @@ public class AddBankActivity extends AppCompatActivity implements AdapterView.On
         Intent intent = new Intent( this, EditBankActivity.class );
         intent.putExtra( "bankDTO", bankDTO );
         startActivity( intent );
+        String msg = getResources().getString( R.string.bankAdded );
+        msg = msg.replace( "{}", bankDTO.getName() );
+
+        Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
+    }
+
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
+        setListview();
     }
 }

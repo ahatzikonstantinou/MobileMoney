@@ -62,4 +62,5 @@
     <string name="enrollFingeprints">Please enroll fingerprints to enable Fingerprint Authentication</string>
     <string name="info">Info</string>
     <string name="setupLockScreen">Please set up a device fingerprint or lock screen to enable Fingerprint Authentication</string>
+    <string name="bankAdded">Bank {} was added</string>
 </resources>

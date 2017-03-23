@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.fingerprint.FingerprintManager;
@@ -12,12 +13,16 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -45,6 +50,11 @@ public class EditBankActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_bank);
+
+        Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
+        setSupportActionBar( toolbar );
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         bankDTO = (BankDTO) getIntent().getSerializableExtra("bankDTO");
 
@@ -107,117 +117,117 @@ public class EditBankActivity extends AppCompatActivity {
 
         checkDisableStoreCredentialsButton();
 
-        checkFingerprintAvailability();
+//        checkFingerprintAvailability();
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults )
-    {
-        switch( requestCode )
-        {
-            case MY_PERMISSIONS_REQUEST_USE_FINGERPRINT:
-                // If request is cancelled, the result arrays are empty.
-                enableFingerprint( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED );
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults )
+//    {
+//        switch( requestCode )
+//        {
+//            case MY_PERMISSIONS_REQUEST_USE_FINGERPRINT:
+//                // If request is cancelled, the result arrays are empty.
+//                enableFingerprint( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED );
+//        }
+//    }
 
-    private void enableFingerprint(boolean enable)
-    {
-        ImageView imageViewFingeprint = (ImageView) findViewById( R.id.imageViewFingeprint);
-        CheckBox checkBoxUseFingerprint = (CheckBox) findViewById( R.id.checkBoxUseFingerprint );
-        imageViewFingeprint.setAlpha( enable ? 255: 38 );
-        checkBoxUseFingerprint.setEnabled( enable );
-    }
+//    private void enableFingerprint(boolean enable)
+//    {
+//        ImageView imageViewFingeprint = (ImageView) findViewById( R.id.imageViewFingeprint);
+//        CheckBox checkBoxUseFingerprint = (CheckBox) findViewById( R.id.checkBoxUseFingerprint );
+//        imageViewFingeprint.setAlpha( enable ? 255: 38 );
+//        checkBoxUseFingerprint.setEnabled( enable );
+//    }
 
-    private void checkFingerprintAvailability()
-    {
-        KeyguardManager keyguardManager = (KeyguardManager ) getSystemService(Context.KEYGUARD_SERVICE);
-        if( !keyguardManager.isKeyguardSecure() )
-        {
-            // Show a message that the user hasn't set up a fingerprint or lock screen.
-            enableFingerprint( false );
-            new AlertDialog.Builder( this ).
-                    setMessage( R.string.setupLockScreen ).
-                    setTitle( R.string.info ).
-                    setIcon( android.R.drawable.ic_dialog_info ).
-                    setPositiveButton( android.R.string.ok, null ).
-                    create().
-                    show();
-            return;
-        }
-
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            FingerprintManager fingerprintManager = (FingerprintManager) getSystemService( Context.FINGERPRINT_SERVICE );
-
-            if( ActivityCompat.checkSelfPermission( this, Manifest.permission.USE_FINGERPRINT ) != PackageManager.PERMISSION_GRANTED )
-            {
-                enableFingerprint( false );
-
-                //from https://developer.android.com/training/permissions/requesting.html
-                if( ActivityCompat.shouldShowRequestPermissionRationale( this, Manifest.permission.USE_FINGERPRINT ) )
-                {
-                    // show an explanation
-                    Toast.makeText( this, R.string.needFingerprintPermission, Toast.LENGTH_LONG ).show();
-                }
-                else
-                {
-                    ActivityCompat.requestPermissions( this, new String[]{ Manifest.permission.USE_FINGERPRINT }, MY_PERMISSIONS_REQUEST_USE_FINGERPRINT );
-                }
-                return;
-            }
-            if( !fingerprintManager.isHardwareDetected() )
-            {
-                // Device doesn't support fingerprint authentication
-                enableFingerprint( false );
-            }
-            else if( !fingerprintManager.hasEnrolledFingerprints() )
-            {
-                // User hasn't enrolled any fingerprints to authenticate with
-                enableFingerprint( false );
-                new AlertDialog.Builder( this ).
-                                                       setMessage( R.string.enrollFingeprints ).
-                                                       setTitle( R.string.info ).
-                                                       setIcon( android.R.drawable.ic_dialog_info ).
-                                                       setPositiveButton( android.R.string.ok, null ).
-                                                       create().
-                                                       show();
-            }
-            else
-            {
-                // Everything is ready for fingerprint authentication
-                enableFingerprint( true );
-            }
-        }
-        else if( Build.BRAND.toLowerCase().equals( "samsung" ) )
-        {
-            Spass mSpass = new Spass();
-            try
-            {
-                mSpass.initialize(this);
-            }
-            catch (SsdkUnsupportedException e)
-            {
-                Log.e( "Fingerprint", e.getLocalizedMessage() );
-            }
-            catch (UnsupportedOperationException e)
-            {
-                Log.e( "Fingerprint", e.getLocalizedMessage() );
-            }
-            boolean isFeatureEnabled = mSpass.isFeatureEnabled(Spass.DEVICE_FINGERPRINT);
-            if(isFeatureEnabled)
-            {
-                SpassFingerprint mSpassFingerprint = new SpassFingerprint( this);
-                boolean mHasRegisteredFinger = mSpassFingerprint.hasRegisteredFinger();
-                Log.d( "Fingerprint", "mHasRegisteredFinger: " + mHasRegisteredFinger );
-            }
-            else
-            {
-                Log.d( "Fingerprint", "Fingerprint Service is not supported in the device.");
-            }
-        }
-    }
+//    private void checkFingerprintAvailability()
+//    {
+//        KeyguardManager keyguardManager = (KeyguardManager ) getSystemService(Context.KEYGUARD_SERVICE);
+//        if( !keyguardManager.isKeyguardSecure() )
+//        {
+//            // Show a message that the user hasn't set up a fingerprint or lock screen.
+//            enableFingerprint( false );
+//            new AlertDialog.Builder( this ).
+//                    setMessage( R.string.setupLockScreen ).
+//                    setTitle( R.string.info ).
+//                    setIcon( android.R.drawable.ic_dialog_info ).
+//                    setPositiveButton( android.R.string.ok, null ).
+//                    create().
+//                    show();
+//            return;
+//        }
+//
+//        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+//        {
+//            FingerprintManager fingerprintManager = (FingerprintManager) getSystemService( Context.FINGERPRINT_SERVICE );
+//
+//            if( ActivityCompat.checkSelfPermission( this, Manifest.permission.USE_FINGERPRINT ) != PackageManager.PERMISSION_GRANTED )
+//            {
+//                enableFingerprint( false );
+//
+//                //from https://developer.android.com/training/permissions/requesting.html
+//                if( ActivityCompat.shouldShowRequestPermissionRationale( this, Manifest.permission.USE_FINGERPRINT ) )
+//                {
+//                    // show an explanation
+//                    Toast.makeText( this, R.string.needFingerprintPermission, Toast.LENGTH_LONG ).show();
+//                }
+//                else
+//                {
+//                    ActivityCompat.requestPermissions( this, new String[]{ Manifest.permission.USE_FINGERPRINT }, MY_PERMISSIONS_REQUEST_USE_FINGERPRINT );
+//                }
+//                return;
+//            }
+//            if( !fingerprintManager.isHardwareDetected() )
+//            {
+//                // Device doesn't support fingerprint authentication
+//                enableFingerprint( false );
+//            }
+//            else if( !fingerprintManager.hasEnrolledFingerprints() )
+//            {
+//                // User hasn't enrolled any fingerprints to authenticate with
+//                enableFingerprint( false );
+//                new AlertDialog.Builder( this ).
+//                                                       setMessage( R.string.enrollFingeprints ).
+//                                                       setTitle( R.string.info ).
+//                                                       setIcon( android.R.drawable.ic_dialog_info ).
+//                                                       setPositiveButton( android.R.string.ok, null ).
+//                                                       create().
+//                                                       show();
+//            }
+//            else
+//            {
+//                // Everything is ready for fingerprint authentication
+//                enableFingerprint( true );
+//            }
+//        }
+//        else if( Build.BRAND.toLowerCase().equals( "samsung" ) )
+//        {
+//            Spass mSpass = new Spass();
+//            try
+//            {
+//                mSpass.initialize(this);
+//            }
+//            catch (SsdkUnsupportedException e)
+//            {
+//                Log.e( "Fingerprint", e.getLocalizedMessage() );
+//            }
+//            catch (UnsupportedOperationException e)
+//            {
+//                Log.e( "Fingerprint", e.getLocalizedMessage() );
+//            }
+//            boolean isFeatureEnabled = mSpass.isFeatureEnabled(Spass.DEVICE_FINGERPRINT);
+//            if(isFeatureEnabled)
+//            {
+//                SpassFingerprint mSpassFingerprint = new SpassFingerprint( this);
+//                boolean mHasRegisteredFinger = mSpassFingerprint.hasRegisteredFinger();
+//                Log.d( "Fingerprint", "mHasRegisteredFinger: " + mHasRegisteredFinger );
+//            }
+//            else
+//            {
+//                Log.d( "Fingerprint", "Fingerprint Service is not supported in the device.");
+//            }
+//        }
+//    }
 
     private void checkDisableStoreCredentialsButton()
     {
@@ -333,5 +343,57 @@ public class EditBankActivity extends AppCompatActivity {
     public void storeCredentials( View view )
     {
         BankService.UserStoreCredentials( this, bankDTO, usernameTV.getText().toString(), passwordTV.getText().toString() );
+    }
+
+    @Override
+    public boolean onSupportNavigateUp()
+    {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu )
+    {
+        getMenuInflater().inflate( R.menu.activity_edit_bank_menu, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( final MenuItem item )
+    {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.action_delete_bank:
+                askDeleteBank();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    private void askDeleteBank()
+    {
+        new AlertDialog.
+            Builder( this ).
+            setTitle( "Confirm Bank Delete" ).
+            setMessage( "Your bank credentials and accounts will be deleted." ).
+            setIcon( R.drawable.ic_warning_black_24dp ).
+            setNegativeButton( android.R.string.cancel, null ).
+            setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick( DialogInterface dialog, int which )
+                {
+                    BankService.UserDeleteBank( getApplicationContext(), bankDTO );
+                    Intent intent = new Intent( EditBankActivity.this, BanksActivity.class );
+                    startActivity( intent );
+                }
+            } ).
+            create().
+            show();
     }
 }
