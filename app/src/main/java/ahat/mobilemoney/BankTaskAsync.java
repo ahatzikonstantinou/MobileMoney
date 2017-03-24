@@ -20,6 +20,8 @@ import ahat.mobilemoney.Banking.Task;
 
 public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
 {
+    private TaskExecuteDialogListAdapter listAdapter;
+    private ListView listView;
     private Activity parentActivity;
     private Task     task;
     private String   title;
@@ -30,23 +32,16 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
         this.parentActivity = activity;
         this.task = task;
         this.title = title;
-//        this.dialog = dialog;
+        this.listAdapter = new TaskExecuteDialogListAdapter( parentActivity, task );
         dialog = BuildTaskDialog();
     }
 
     public AlertDialog BuildTaskDialog()
     {
-
-//        LayoutInflater inflater = LayoutInflater.from( parentActivity );
         LayoutInflater inflater = parentActivity.getLayoutInflater();
         View dialogView = inflater.inflate( R.layout.task_execution_list, null);
-//        ListView listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
-//        listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
-//        listView.post(new Runnable() {
-//            public void run() {
-//                listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
-//        }
-//    });
+        listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
+        listView.setAdapter( listAdapter );
 
         return new AlertDialog.Builder( parentActivity ).
              setTitle( title ).
@@ -61,6 +56,7 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
              } ).
              create();
     }
+
     @Override
     protected void onPreExecute()
     {
@@ -82,7 +78,16 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
     @Override
     protected void onProgressUpdate( Integer...progress)
     {
+        markRunningStep( progress[0] );
+    }
 
+    private void markRunningStep( int progress )
+    {
+        listAdapter.setRunningStep( progress );
+        listAdapter.notifyDataSetChanged();
+        listView.invalidate();
+//        listView.requestLayout();
+        super.onProgressUpdate(progress);
     }
 
     /**
@@ -104,7 +109,7 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
     {
         for( int i = 0 ; i < task.getSteps().size() ; i++ )
         {
-            SystemClock.sleep( 2000 );
+            SystemClock.sleep( 5000 );
             publishProgress( i );
         }
         return true;

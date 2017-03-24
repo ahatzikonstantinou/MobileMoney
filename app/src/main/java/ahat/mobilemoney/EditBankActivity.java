@@ -71,7 +71,16 @@ public class EditBankActivity extends AppCompatActivity {
         TextView bankName = (TextView) findViewById(R.id.activity_edit_bank_bank_name);
         bankName.setText(bankDTO.getName());
 
-        bank = BankService.GetBank(this, bankDTO);
+        try
+        {
+            bank = BankService.GetBank(this, bankDTO);
+        }
+        catch( Exception e )
+        {
+            Toast.makeText( this, "Could not get bank " + bankDTO.getName(), Toast.LENGTH_SHORT ).show();
+            EnableStoreCredentialsButton( false );
+            return ;
+        }
         passwordTV = (EditText) findViewById(R.id.editTextPassword);
         passwordTV.setText(bank.getPassword());
         passwordTV.addTextChangedListener(new TextWatcher() {
@@ -237,6 +246,11 @@ public class EditBankActivity extends AppCompatActivity {
     private void checkDisableStoreCredentialsButton()
     {
         boolean enable = 0 < usernameTV.getText().toString().trim().length() && 0 < passwordTV.getText().toString().trim().length();
+        EnableStoreCredentialsButton( enable );
+    }
+
+    private void EnableStoreCredentialsButton( boolean enable )
+    {
         storeCredentialsButton.setEnabled( enable );
         storeCredentialsButton.setClickable( enable );
         Drawable icon = storeCredentialsButton.getCompoundDrawables()[1];
@@ -399,26 +413,7 @@ public class EditBankActivity extends AppCompatActivity {
             return;
         }
 
-//        Utils.RunTask( this, task, taskName );
-
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate( R.layout.task_execution_list, null);
-//        ListView listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
-//        listView.setAdapter( new TaskExecuteDialogListAdapter( this, task ) );
-//        listView.post(new Runnable() {
-//            public void run() {
-//                listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
-//        }
-//    });
-
-        WebView wv = new WebView( getApplicationContext() );
-        wv.loadUrl( "https://mobile.winbank.gr/login.aspx?lg=en" );
-        new AlertDialog.Builder( this ).
-                                                         setTitle( taskName ).
-                                                         setView( dialogView ).
-                                                         setNegativeButton( android.R.string.cancel, null ).
-                                                         create().
-                                                         show();
+        Utils.RunTask( this, task, taskName );
     }
 
     private void askDeleteBank()

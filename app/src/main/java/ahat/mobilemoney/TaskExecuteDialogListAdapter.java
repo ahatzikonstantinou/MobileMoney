@@ -20,10 +20,15 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
 {
     private Context context;
     private Task task;
+    private int runningStep;
+
+    public void setRunningStep( int value ) { runningStep = value; }
+
     public TaskExecuteDialogListAdapter( Context context, Task task )
     {
         this.context = context;
         this.task = task;
+        this.runningStep = -1;
     }
 
     /**
@@ -90,6 +95,27 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
             convertView = inflater.inflate( R.layout.task_execution_step, null );
             TextView stepTV = (TextView) convertView.findViewById( R.id.textViewStep );
             stepTV.setText( s.getName() );
+
+            ProgressBar pb = (ProgressBar) convertView.findViewById( R.id.progressBar );
+            ImageView iv = (ImageView) convertView.findViewById( R.id.imageViewStep );
+            if( position > runningStep )
+            {
+                //Step has not run yet
+                stepTV.setAlpha( 0.5f );
+                iv.setVisibility( View.INVISIBLE );
+                pb.setVisibility( View.INVISIBLE );
+            }
+            else if( runningStep == position )
+            {
+                stepTV.setAlpha( 1f );
+                pb.setVisibility( View.VISIBLE );
+            }
+            else
+            {
+                stepTV.setAlpha( 1f );
+                iv.setVisibility( View.VISIBLE );
+                pb.setVisibility( View.INVISIBLE );
+            }
         }
         return convertView;
     }

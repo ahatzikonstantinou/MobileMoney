@@ -81,24 +81,8 @@ public class Utils
      */
     public static void RunTask( Activity parentActivity, Task task, String title )
     {
-        LayoutInflater inflater = parentActivity.getLayoutInflater();
-        View dialogView = inflater.inflate( R.layout.task_execution_list, null);
-//        ListView listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
-//        listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
-//        listView.post(new Runnable() {
-//            public void run() {
-//                listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
-//        }
-//    });
-
-        new AlertDialog.Builder( parentActivity ).
-                                                                setTitle( title ).
-                                                                setView( dialogView ).
-                                                                setNegativeButton( android.R.string.cancel, null ).
-                                                                create().
-                show();
-//        BankTaskAsync bta = new BankTaskAsync( parentActivity, task, title );
-//        bta.execute();
+        BankTaskAsync bta = new BankTaskAsync( parentActivity, task, title );
+        bta.execute();
     }
 
 }

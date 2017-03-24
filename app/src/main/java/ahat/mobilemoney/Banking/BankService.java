@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.text.Editable;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.List;
 
 import ahat.mobilemoney.R;
@@ -127,17 +128,9 @@ public class BankService
         storageProxy.StoreCredentials( bankDTO, username, password );
     }
 
-    public static Bank GetBank( Context context, BankDTO bankDTO )
+    public static Bank GetBank( Context context, BankDTO bankDTO ) throws IOException, ClassNotFoundException
     {
-        try
-        {
-            StorageProxy storageProxy = new StorageProxy( context );
-            return storageProxy.GetBank( bankDTO.getCode() );
-        }
-        catch( Exception e )
-        {
-            Toast.makeText( context, "Could not get bank " + bankDTO.getName(), Toast.LENGTH_SHORT ).show();
-        }
-        return null;
+        StorageProxy storageProxy = new StorageProxy( context );
+        return storageProxy.GetBank( bankDTO.getCode() );
     }
 }
