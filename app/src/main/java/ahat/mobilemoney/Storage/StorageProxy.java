@@ -38,17 +38,24 @@ public class StorageProxy
     {
         List<BankShort> banks = new ArrayList<BankShort>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        cursor = db.rawQuery( StorageDBHelper.SQL_SELECT_ALL, null );
-        while( cursor.moveToNext() )
+        try
         {
-            banks.add(
-                    new BankShort(
-                            cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ),
-                            cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) )
-                            )
-            );
+            cursor = db.rawQuery( StorageDBHelper.SQL_SELECT_ALL, null );
+            while( cursor.moveToNext() )
+            {
+                banks.add(
+                        new BankShort(
+                                cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ),
+                                cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) )
+                        )
+                );
+            }
+            return banks;
         }
-        return banks;
+        finally
+        {
+            cursor.close();
+        }
     }
 
     /*
@@ -134,20 +141,27 @@ public class StorageProxy
     {
         List<BankDTO> banks = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        cursor = db.rawQuery( query, args );
-        while( cursor.moveToNext() )
+        try
         {
-            banks.add(
-                    new BankDTO(
-                            cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ),
-                            cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_NAME ) ),
-                            cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ),
-                            cursor.getInt( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_ACTIVE ) ) == 1,
-                            null
-                    )
-            );
+            cursor = db.rawQuery( query, args );
+            while( cursor.moveToNext() )
+            {
+                banks.add(
+                        new BankDTO(
+                                cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ),
+                                cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_NAME ) ),
+                                cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ),
+                                cursor.getInt( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_ACTIVE ) ) == 1,
+                                null
+                        )
+                );
+            }
+            return banks;
         }
-        return banks;
+        finally
+        {
+            cursor.close();
+        }
     }
 
     public List<BankDTO> GetAllActiveBanksNoTasks()
@@ -219,18 +233,25 @@ public class StorageProxy
     {
         Bank bank = new Bank();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        cursor = db.rawQuery( StorageDBHelper.SQL_SELECT_BY_CODE, new String[]{ code } );
-        if( cursor.moveToNext() )
+        try
         {
-            bank.setVersion( cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ) );
-            bank.setName( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_NAME ) ) );
-            bank.setCode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ) );
-            bank.setPassword( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_PASSWORD ) ) );
-            bank.setUsername( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_USERNAME ) ) );
-            bank.setTasks( BytesToTasks( Base64.decode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ), Base64.NO_WRAP ) ) );
+            cursor = db.rawQuery( StorageDBHelper.SQL_SELECT_BY_CODE, new String[]{ code } );
+            if( cursor.moveToNext() )
+            {
+                bank.setVersion( cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ) );
+                bank.setName( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_NAME ) ) );
+                bank.setCode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ) );
+                bank.setPassword( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_PASSWORD ) ) );
+                bank.setUsername( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_USERNAME ) ) );
+                bank.setTasks( BytesToTasks( Base64.decode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ), Base64.NO_WRAP ) ) );
 //            bank.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
 
-            return bank;
+                return bank;
+            }
+        }
+        finally
+        {
+            cursor.close();
         }
         return null;
     }
