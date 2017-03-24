@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
 {
     private TaskExecuteDialogListAdapter listAdapter;
     private ListView listView;
+    private View dialogView;
     private Activity parentActivity;
     private Task     task;
     private String   title;
@@ -32,18 +34,23 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
         this.parentActivity = activity;
         this.task = task;
         this.title = title;
-        this.listAdapter = new TaskExecuteDialogListAdapter( parentActivity, task );
+        this.listAdapter = new TaskExecuteDialogListAdapter( parentActivity, task, -1 );
         dialog = BuildTaskDialog();
+    }
+
+    private void setupListView( View dialogView, TaskExecuteDialogListAdapter listAdapter )
+    {
+        listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
+        listView.setAdapter( listAdapter );
     }
 
     public AlertDialog BuildTaskDialog()
     {
         LayoutInflater inflater = parentActivity.getLayoutInflater();
-        View dialogView = inflater.inflate( R.layout.task_execution_list, null);
-        listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
-        listView.setAdapter( listAdapter );
+        dialogView = inflater.inflate( R.layout.task_execution_list, null);
+        setupListView( dialogView, listAdapter );
 
-        return new AlertDialog.Builder( parentActivity ).
+        AlertDialog d = new AlertDialog.Builder( parentActivity ).
              setTitle( title ).
              setView( dialogView ).
              setNegativeButton( android.R.string.cancel, new DialogInterface.OnClickListener()
@@ -54,7 +61,18 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
                      cancel( true );
                  }
              } ).
-             create();
+            setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick( DialogInterface dialog, int which )
+                {
+                    dialog.dismiss();
+                }
+            }).
+                create();
+
+
+        return d;
     }
 
     @Override
@@ -62,6 +80,7 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
     {
         super.onPreExecute();
         dialog.show();
+        dialog.getButton( AlertDialog.BUTTON_POSITIVE ).setVisibility( View.GONE );
     }
 
     @Override
@@ -69,7 +88,8 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
     {
         if( dialog.isShowing() )
         {
-            dialog.dismiss();
+            dialog.getButton( AlertDialog.BUTTON_NEGATIVE ).setVisibility( View.GONE );
+            dialog.getButton( AlertDialog.BUTTON_POSITIVE ).setVisibility( View.VISIBLE );
         }
         Toast.makeText( parentActivity, new String("Task " + title + " finished."), Toast.LENGTH_LONG ).show();
         super.onPostExecute(result);
@@ -78,16 +98,16 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
     @Override
     protected void onProgressUpdate( Integer...progress)
     {
+        super.onProgressUpdate(progress);
+        Toast.makeText( parentActivity, new String("Progress: " + progress[0]), Toast.LENGTH_LONG ).show();
         markRunningStep( progress[0] );
     }
 
     private void markRunningStep( int progress )
     {
         listAdapter.setRunningStep( progress );
-        listAdapter.notifyDataSetChanged();
-        listView.invalidate();
-//        listView.requestLayout();
-        super.onProgressUpdate(progress);
+        listAdapter.setTask( task );
+        setupListView( dialogView, listAdapter );
     }
 
     /**
@@ -109,9 +129,13 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
     {
         for( int i = 0 ; i < task.getSteps().size() ; i++ )
         {
-            SystemClock.sleep( 5000 );
             publishProgress( i );
+
+            //TODO: replaace SystemClock.sleep( 5000 ); with actual work
+            SystemClock.sleep( 5000 );
         }
+        publishProgress( task.getSteps().size() );
+//        SystemClock.sleep( 3000 );
         return true;
     }
 }

@@ -23,12 +23,16 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
     private int runningStep;
 
     public void setRunningStep( int value ) { runningStep = value; }
+    public int getRunningStep(){ return runningStep; }
 
-    public TaskExecuteDialogListAdapter( Context context, Task task )
+    public void setTask( Task task ){ this.task = task; }
+    public Task getTask(){ return task; }
+
+    public TaskExecuteDialogListAdapter( Context context, Task task, int runningStep )
     {
         this.context = context;
         this.task = task;
-        this.runningStep = -1;
+        this.runningStep = runningStep;
     }
 
     /**
