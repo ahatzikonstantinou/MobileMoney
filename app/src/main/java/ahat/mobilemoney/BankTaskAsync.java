@@ -19,7 +19,7 @@ import ahat.mobilemoney.Banking.Task;
  * Created by antonis on 23/3/2017.
  */
 
-public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
+public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
 {
     private TaskExecuteDialogListAdapter listAdapter;
     private ListView listView;
@@ -50,7 +50,7 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
         dialogView = inflater.inflate( R.layout.task_execution_list, null);
         setupListView( dialogView, listAdapter );
 
-        AlertDialog d = new AlertDialog.Builder( parentActivity ).
+        return new AlertDialog.Builder( parentActivity ).
              setTitle( title ).
              setView( dialogView ).
              setNegativeButton( android.R.string.cancel, new DialogInterface.OnClickListener()
@@ -69,10 +69,7 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
                     dialog.dismiss();
                 }
             }).
-                create();
-
-
-        return d;
+            create();
     }
 
     @Override
@@ -91,21 +88,22 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
             dialog.getButton( AlertDialog.BUTTON_NEGATIVE ).setVisibility( View.GONE );
             dialog.getButton( AlertDialog.BUTTON_POSITIVE ).setVisibility( View.VISIBLE );
         }
-        Toast.makeText( parentActivity, new String("Task " + title + " finished."), Toast.LENGTH_LONG ).show();
+//        Toast.makeText( parentActivity, new String("Task " + title + " finished."), Toast.LENGTH_LONG ).show();
         super.onPostExecute(result);
     }
 
     @Override
-    protected void onProgressUpdate( Integer...progress)
+    protected void onProgressUpdate( Boolean... progress)
     {
         super.onProgressUpdate(progress);
-        Toast.makeText( parentActivity, new String("Progress: " + progress[0]), Toast.LENGTH_LONG ).show();
-        markRunningStep( progress[0] );
+//        Toast.makeText( parentActivity, new String("Progress: " + progress[0]), Toast.LENGTH_LONG ).show();
+        markRunningStep( progress );
     }
 
-    private void markRunningStep( int progress )
+    private void markRunningStep( Boolean[] progress )
     {
-        listAdapter.setRunningStep( progress );
+        listAdapter.setRunningStep( listAdapter.getRunningStep() + 1 );
+        listAdapter.setResults( progress );
         listAdapter.setTask( task );
         setupListView( dialogView, listAdapter );
     }
@@ -127,14 +125,16 @@ public class BankTaskAsync extends AsyncTask<Void, Integer, Boolean>
     @Override
     protected Boolean doInBackground( Void... params )
     {
+        Boolean[] results = new Boolean[task.getSteps().size()];
         for( int i = 0 ; i < task.getSteps().size() ; i++ )
         {
-            publishProgress( i );
+            results[i] = i%2 == 0;
+            publishProgress( results );
 
             //TODO: replaace SystemClock.sleep( 5000 ); with actual work
             SystemClock.sleep( 5000 );
         }
-        publishProgress( task.getSteps().size() );
+        publishProgress( results );
 //        SystemClock.sleep( 3000 );
         return true;
     }

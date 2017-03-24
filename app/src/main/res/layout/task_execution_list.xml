@@ -4,17 +4,18 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+
     <ListView
         android:id="@+id/task_execution_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="32dp"
         android:choiceMode="singleChoice"
-        android:focusable="true"
         android:divider="@android:drawable/divider_horizontal_textfield"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </ListView>
+        app:layout_constraintTop_toTopOf="parent"></ListView>
 
 </LinearLayout>

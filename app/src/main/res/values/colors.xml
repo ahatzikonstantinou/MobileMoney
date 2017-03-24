@@ -6,5 +6,6 @@
     <color name="colorToolbarMenuIcon">#ffffff</color>
     <color name="white">#ffffff</color>
     <color name="grey">#888888</color>
-    <color name="green">#696</color>
+    <color name="green">#669966</color>
+    <color name="red">#c42b2d</color>
 </resources>

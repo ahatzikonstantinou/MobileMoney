@@ -21,12 +21,16 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
     private Context context;
     private Task task;
     private int runningStep;
+    private Boolean[] results;
 
     public void setRunningStep( int value ) { runningStep = value; }
     public int getRunningStep(){ return runningStep; }
 
     public void setTask( Task task ){ this.task = task; }
     public Task getTask(){ return task; }
+
+    public Boolean[] getResults(){ return results; }
+    public void setResults( Boolean[] results ){ this.results = results; }
 
     public TaskExecuteDialogListAdapter( Context context, Task task, int runningStep )
     {
@@ -101,26 +105,41 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
             stepTV.setText( s.getName() );
 
             ProgressBar pb = (ProgressBar) convertView.findViewById( R.id.progressBar );
-            ImageView iv = (ImageView) convertView.findViewById( R.id.imageViewStep );
+            ImageView ivsf = (ImageView) convertView.findViewById( R.id.imageViewStepFail );
+            ImageView ivss = (ImageView) convertView.findViewById( R.id.imageViewStepSuccess );
             if( position > runningStep )
             {
                 //Step has not run yet
                 stepTV.setAlpha( 0.5f );
-                iv.setVisibility( View.INVISIBLE );
+                ivss.setVisibility( View.INVISIBLE );
+                ivsf.setVisibility( View.INVISIBLE );
                 pb.setVisibility( View.INVISIBLE );
             }
             else if( runningStep == position )
             {
                 stepTV.setAlpha( 1f );
+                ivss.setVisibility( View.INVISIBLE );
+                ivsf.setVisibility( View.INVISIBLE );
                 pb.setVisibility( View.VISIBLE );
             }
             else
             {
+                // step has already executed
                 stepTV.setAlpha( 1f );
-                iv.setVisibility( View.VISIBLE );
+                if( results[position] ) //success
+                {
+                    ivss.setVisibility( View.VISIBLE );
+                    ivsf.setVisibility( View.INVISIBLE );
+                }
+                else
+                {
+                    ivss.setVisibility( View.INVISIBLE );
+                    ivsf.setVisibility( View.VISIBLE );
+                }
                 pb.setVisibility( View.INVISIBLE );
             }
         }
         return convertView;
     }
+
 }
