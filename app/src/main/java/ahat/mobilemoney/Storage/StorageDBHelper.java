@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class StorageDBHelper extends SQLiteOpenHelper
 {
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "MobileMoney.db";
 
     private static final String SQL_CREATE_TABLE_BANK = "CREATE TABLE " + StorageContract.DBBank.TABLE_NAME + " (" +
@@ -19,7 +19,7 @@ public class StorageDBHelper extends SQLiteOpenHelper
                                                         StorageContract.DBBank.COLUMN_NAME_CODE + " TEXT," +
                                                         StorageContract.DBBank.COLUMN_NAME_VERSION + " INTEGER," +
                                                         StorageContract.DBBank.COLUMN_NAME_ACTIVE + " INTEGER," +
-                                                        StorageContract.DBBank.COLUMN_NAME_TASKS + " BLOB," +
+                                                        StorageContract.DBBank.COLUMN_NAME_TASKS + " TEXT," +
                                                         StorageContract.DBBank.COLUMN_NAME_USERNAME + " TEXT," +
                                                         StorageContract.DBBank.COLUMN_NAME_PASSWORD + " TEXT)";
 

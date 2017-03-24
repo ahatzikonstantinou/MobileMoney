@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -60,7 +61,7 @@ public class StorageProxy
 
     private List<Task> BytesToTasks( byte[] buffer ) throws IOException, ClassNotFoundException
     {
-        ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream( buffer));
+        ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream( buffer) );
         try
         {
             return new ArrayList<>( (List<Task>) ois.readObject() );
@@ -90,7 +91,7 @@ public class StorageProxy
         values.put( StorageContract.DBBank.COLUMN_NAME_NAME, newBank.getName() );
         values.put( StorageContract.DBBank.COLUMN_NAME_VERSION, newBank.getVersion() );
         values.put( StorageContract.DBBank.COLUMN_NAME_ACTIVE, newBank.isActive() ? 1 : 0 );
-        values.put( StorageContract.DBBank.COLUMN_NAME_TASKS, tasks );
+        values.put( StorageContract.DBBank.COLUMN_NAME_TASKS, Base64.encodeToString( tasks, Base64.NO_WRAP ) );
         long newRowId = db.insert( StorageContract.DBBank.TABLE_NAME, null, values );
     }
 
@@ -108,7 +109,7 @@ public class StorageProxy
         values.put( StorageContract.DBBank.COLUMN_NAME_NAME, newBank.getName() );
         values.put( StorageContract.DBBank.COLUMN_NAME_VERSION, newBank.getVersion() );
         values.put( StorageContract.DBBank.COLUMN_NAME_ACTIVE, newBank.isActive() ? 1 : 0 );
-        values.put( StorageContract.DBBank.COLUMN_NAME_TASKS, tasks );
+        values.put( StorageContract.DBBank.COLUMN_NAME_TASKS, Base64.encodeToString( tasks, Base64.NO_WRAP ) );
 
         db.update( StorageContract.DBBank.TABLE_NAME, values, selection, selectionArgs );
     }
@@ -226,7 +227,8 @@ public class StorageProxy
             bank.setCode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ) );
             bank.setPassword( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_PASSWORD ) ) );
             bank.setUsername( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_USERNAME ) ) );
-            bank.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
+            bank.setTasks( BytesToTasks( Base64.decode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ), Base64.NO_WRAP ) ) );
+//            bank.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
 
             return bank;
         }
