@@ -48,7 +48,7 @@ public class UpdateBanks extends AsyncTask<Void, Void, Long >
     protected Long doInBackground( Void... params )
     {
         List<BankShort> existing = getExistingBanks();
-        List<BankDTO> newBanks = Platform.GetBankList( existing );
+        List<BankDTO> newBanks = Platform.GetBankListExcludeExisting( existing );
         try
         {
             Save( newBanks, existing );

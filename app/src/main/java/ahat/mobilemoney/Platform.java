@@ -1,8 +1,10 @@
 package ahat.mobilemoney;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankShort;
 import ahat.mobilemoney.Banking.Step;
@@ -16,14 +18,10 @@ import ahat.mobilemoney.Banking.Task;
 
 public class Platform
 {
-    /*
-     * Retrieves all banks that are not present in the param list or have a version higher than in the param list.
-     */
-    public static List<BankDTO> GetBankList( List<BankShort> currentBanks )
+    public static List<BankDTO> GetAllBanks()
     {
-        // TODO: replace with information that comes from the platform with a web request
         return Arrays.asList(
-                new BankDTO( 1, "Alpha Bank", "00A", false,
+                new BankDTO( 3, "Alpha Bank", "00A", false,
                              Arrays.asList(
                                      new Task(
                                              Task.Code.TestLogin,
@@ -48,6 +46,45 @@ public class Platform
                 new BankDTO( 1, "Eurobank", "0EU", false, null ),
                 new BankDTO( 1, "Ethniki", "00E", false, null )
         );
+    }
+
+    public static BankDTO GetBankByCode( String code )
+    {
+        List<BankDTO> banks = GetAllBanks();
+        for( BankDTO b : banks )
+        {
+            if( b.getCode().equals( code ) )
+            {
+                return b;
+            }
+        }
+        return null;
+    }
+    /*
+     * Retrieves all banks that are not present in the param list or have a version higher than in the param list.
+     */
+    public static List<BankDTO> GetBankListExcludeExisting( List<BankShort> localBanks )
+    {
+        // TODO: replace with information that comes from the platform with a web request
+        List<BankDTO> remoteBanks = GetAllBanks();
+        List<BankDTO> banks = new ArrayList<>();
+        for( BankDTO r : remoteBanks )
+        {
+            boolean add = true;
+            for( BankShort l : localBanks )
+            {
+                if( l.getCode().equals( r.getCode() ) && l.getVersion() >= r.getVersion() )
+                {
+                    add = false;
+                    break;
+                }
+            }
+            if( add )
+            {
+                banks.add( r );
+            }
+        }
+        return banks;
     }
 
     /**

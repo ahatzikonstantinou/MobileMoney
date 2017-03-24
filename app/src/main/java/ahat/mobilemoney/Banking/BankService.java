@@ -1,5 +1,7 @@
 package ahat.mobilemoney.Banking;
 
+import android.app.Activity;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.Editable;
@@ -8,6 +10,8 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 
+import ahat.mobilemoney.EditBankActivity;
+import ahat.mobilemoney.Platform;
 import ahat.mobilemoney.R;
 import ahat.mobilemoney.Storage.StorageProxy;
 
@@ -112,7 +116,7 @@ public class BankService
      */
     public static BankDTO UpdateFromPlatform( Context context, BankShort localBank, BankDTO remoteBank )
     {
-        return new BankDTO( remoteBank.getVersion(), remoteBank.getName(), remoteBank.getCode(), GetLocalBankDTO( context, localBank ).isActive(), null );
+        return new BankDTO( remoteBank.getVersion(), remoteBank.getName(), remoteBank.getCode(), GetLocalBankDTO( context, localBank ).isActive(), remoteBank.getTasks() );
     }
 
     public static void UserClearCredentials( Context context, BankDTO bankDTO )
@@ -132,5 +136,14 @@ public class BankService
     {
         StorageProxy storageProxy = new StorageProxy( context );
         return storageProxy.GetBank( bankDTO.getCode() );
+    }
+
+    public static BankDTO RefreshBank( Activity parentActivity, BankDTO bankDTO ) throws IOException
+    {
+        StorageProxy storageProxy = new StorageProxy( parentActivity );
+        storageProxy.DeleteBank( bankDTO.getCode() );
+        storageProxy.SaveNew( Platform.GetBankByCode( bankDTO.getCode() ) );
+
+        return storageProxy.GetBankDTO( bankDTO.getCode()  );
     }
 }

@@ -38,6 +38,8 @@ import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.pass.Spass;
 import com.samsung.android.sdk.pass.SpassFingerprint;
 
+import java.io.IOException;
+
 import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankService;
@@ -386,16 +388,32 @@ public class EditBankActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 break;
+//            case R.id.action_refresh_bank:
+//                refreshBank();
+//                break;
             case R.id.action_delete_bank:
                 askDeleteBank();
                 break;
             case R.id.action_import_accounts:
                 importAccounts();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
+
+//    private void refreshBank()
+//    {
+//        try
+//        {
+//            bankDTO = BankService.RefreshBank( this, bankDTO );
+//        }
+//        catch( Exception e )
+//        {
+//            Toast.makeText( this, new String( "Refresh of bank " + bankDTO.getName() + " failed." ), Toast.LENGTH_LONG ).show();
+//        }
+//    }
 
     private void importAccounts()
     {

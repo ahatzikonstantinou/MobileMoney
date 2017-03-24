@@ -16,6 +16,10 @@ public class BankDTO implements Serializable
     private boolean    active;
     private List<Task> tasks;
 
+    public BankDTO()
+    {
+    }
+
     public BankDTO( long version, String name, String code, boolean active, List<Task> tasks )
     {
         this.version = version;
