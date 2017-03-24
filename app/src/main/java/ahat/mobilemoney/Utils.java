@@ -1,6 +1,13 @@
 package ahat.mobilemoney;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +15,7 @@ import java.util.stream.Collectors;
 
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankService;
+import ahat.mobilemoney.Banking.Task;
 
 /**
  * Created by antonis on 11/3/2017.
@@ -42,4 +50,55 @@ public class Utils
         }
         return items;
     }
+
+    public static void AskDeleteBank( Context context, BankDTO bankDTO, Class<?> activityClassToGo )
+    {
+        new AlertDialog.
+            Builder( context ).
+               setTitle( "Confirm Bank Delete" ).
+               setMessage( "Your bank credentials and accounts will be deleted." ).
+               setIcon( R.drawable.ic_warning_black_24dp ).
+               setNegativeButton( android.R.string.cancel, null ).
+               setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener()
+               {
+                   @Override
+                   public void onClick( DialogInterface dialog, int which )
+                   {
+                       BankService.UserDeleteBank( context, bankDTO );
+                       Intent intent = new Intent( context, activityClassToGo );
+                       context.startActivity( intent );
+                   }
+               } ).
+               create().
+               show();
+    }
+
+    /**
+     * Runs a task as an AsyncTask. The asynctask starts a dialog, the executes the task's steps, updates the dialog at each step
+     * or the dialog may cancel the asynctask onClickCancel
+     * @param parent
+     * @param task
+     */
+    public static void RunTask( Activity parentActivity, Task task, String title )
+    {
+        LayoutInflater inflater = parentActivity.getLayoutInflater();
+        View dialogView = inflater.inflate( R.layout.task_execution_list, null);
+//        ListView listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
+//        listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
+//        listView.post(new Runnable() {
+//            public void run() {
+//                listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
+//        }
+//    });
+
+        new AlertDialog.Builder( parentActivity ).
+                                                                setTitle( title ).
+                                                                setView( dialogView ).
+                                                                setNegativeButton( android.R.string.cancel, null ).
+                                                                create().
+                show();
+//        BankTaskAsync bta = new BankTaskAsync( parentActivity, task, title );
+//        bta.execute();
+    }
+
 }

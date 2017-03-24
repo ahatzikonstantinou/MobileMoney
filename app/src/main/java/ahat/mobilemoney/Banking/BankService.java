@@ -3,6 +3,7 @@ package ahat.mobilemoney.Banking;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.Editable;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -39,6 +40,40 @@ public class BankService
     {
         StorageProxy storageProxy = new StorageProxy( context );
         return storageProxy.GetAllInactiveBanksNoTasks();
+    }
+
+    public static String GetTaskName( Context context, Task.Code taskCode )
+    {
+        String[] taskNames = context.getResources().getStringArray( R.array.task_titles );
+        for( String name : taskNames )
+        {
+            String[] codeName = name.split( "\\|" );
+            if( codeName[0].equals( taskCode.name() ) )
+            {
+                return codeName[1];
+            }
+        }
+
+        return "Not found";
+    }
+
+    public static Task GetTaskOfBank( Bank bank, Task.Code taskCode )
+    {
+        List<Task> tasks = bank.getTasks();
+        if( null == tasks )
+        {
+            return null;
+        }
+
+        for( Task task : bank.getTasks() )
+        {
+            if( task.getCode().equals( taskCode ) )
+            {
+                return task;
+            }
+        }
+
+        return null;
     }
 
     public static int GetBankLogo( Context context, BankDTO bankDTO )
@@ -94,7 +129,15 @@ public class BankService
 
     public static Bank GetBank( Context context, BankDTO bankDTO )
     {
-        StorageProxy storageProxy = new StorageProxy( context );
-        return storageProxy.GetBank( bankDTO.getCode() );
+        try
+        {
+            StorageProxy storageProxy = new StorageProxy( context );
+            return storageProxy.GetBank( bankDTO.getCode() );
+        }
+        catch( Exception e )
+        {
+            Toast.makeText( context, "Could not get bank " + bankDTO.getName(), Toast.LENGTH_SHORT ).show();
+        }
+        return null;
     }
 }

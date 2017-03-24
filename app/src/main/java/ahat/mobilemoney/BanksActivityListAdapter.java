@@ -93,27 +93,7 @@ public class BanksActivityListAdapter extends BaseAdapter
                 @Override
                 public void onClick( View v )
                 {
-                    AlertDialog.Builder builder = new AlertDialog.Builder( context );
-                    builder.setMessage(R.string.delete_bank_dialog_msg)
-                           .setTitle(R.string.delete_bank_dialog_title)
-                           .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                   @Override
-                                                   public void onClick( DialogInterface dialog, int which )
-                                                   {
-                                                       BankService.UserDeleteBank( context, item.getBankDTO() );
-                                                       Toast.makeText( context, "Deleted bank " + item.getBankName(), Toast.LENGTH_LONG ).show();
-                                                       banksActivityListItems.clear();
-                                                       banksActivityListItems = Utils.GetBanksActivityListItems( context );
-                                                       // the next lines do not update the listview. Must expliciltly call the setupBanksList method
-//                                                       notifyDataSetChanged();
-//                                                       listView.invalidateViews();
-                                                       ( (BanksActivity ) context ).setupBanksList();
-                                                   }
-                                               }
-                           )
-                           .setNegativeButton( android.R.string.cancel, null )
-                           .setIcon( R.drawable.ic_warning_black_24dp )
-                           .create().show();
+                    Utils.AskDeleteBank( context, item.getBankDTO(), BanksActivity.class );
                 }
             } );
 

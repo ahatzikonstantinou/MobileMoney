@@ -5,12 +5,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
 import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankShort;
+import ahat.mobilemoney.Banking.Task;
 
 /**
  * Created by antonis on 19/3/2017.
@@ -51,8 +58,31 @@ public class StorageProxy
         return GetAllBanksNoTasks( StorageDBHelper.SQL_SELECT_ALL, null );
     }
 
-    public void SaveNew( BankDTO newBank )
+    private List<Task> BytesToTasks( byte[] buffer ) throws IOException, ClassNotFoundException
     {
+        ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream( buffer));
+        try
+        {
+            return new ArrayList<>( (List<Task>) ois.readObject() );
+        }
+        finally
+        {
+            ois.close();
+        }
+    }
+    private byte[] TasksToBytes( List<Task> tasks ) throws IOException
+    {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        oos = new ObjectOutputStream( bos);
+        oos.writeObject( tasks );
+        return bos.toByteArray();
+    }
+
+    public void SaveNew( BankDTO newBank ) throws IOException
+    {
+        byte[] tasks = TasksToBytes( newBank.getTasks() );
+
         //from https://developer.android.com/training/basics/data-storage/databases.html
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -60,10 +90,11 @@ public class StorageProxy
         values.put( StorageContract.DBBank.COLUMN_NAME_NAME, newBank.getName() );
         values.put( StorageContract.DBBank.COLUMN_NAME_VERSION, newBank.getVersion() );
         values.put( StorageContract.DBBank.COLUMN_NAME_ACTIVE, newBank.isActive() ? 1 : 0 );
+        values.put( StorageContract.DBBank.COLUMN_NAME_TASKS, tasks );
         long newRowId = db.insert( StorageContract.DBBank.TABLE_NAME, null, values );
     }
 
-    public void Update( BankDTO newBank )
+    public void Update( BankDTO newBank ) throws IOException
     {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -71,10 +102,13 @@ public class StorageProxy
         String selection = StorageContract.DBBank.COLUMN_NAME_CODE + " = ?";
         String[] selectionArgs = { newBank.getCode() };
 
+        byte[] tasks = TasksToBytes( newBank.getTasks() );
+
         ContentValues values = new ContentValues();
         values.put( StorageContract.DBBank.COLUMN_NAME_NAME, newBank.getName() );
         values.put( StorageContract.DBBank.COLUMN_NAME_VERSION, newBank.getVersion() );
         values.put( StorageContract.DBBank.COLUMN_NAME_ACTIVE, newBank.isActive() ? 1 : 0 );
+        values.put( StorageContract.DBBank.COLUMN_NAME_TASKS, tasks );
 
         db.update( StorageContract.DBBank.TABLE_NAME, values, selection, selectionArgs );
     }
@@ -180,7 +214,7 @@ public class StorageProxy
         db.update( StorageContract.DBBank.TABLE_NAME, values, selection, selectionArgs );
     }
 
-    public Bank GetBank( String code )
+    public Bank GetBank( String code ) throws IOException, ClassNotFoundException
     {
         Bank bank = new Bank();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -192,6 +226,7 @@ public class StorageProxy
             bank.setCode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ) );
             bank.setPassword( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_PASSWORD ) ) );
             bank.setUsername( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_USERNAME ) ) );
+            bank.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
 
             return bank;
         }

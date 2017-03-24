@@ -12,6 +12,10 @@
         <item>@drawable/efg_eurobank_ergasias_squarelogo_1423814513987</item>
         <item>@drawable/ethniki</item>
     </array>
+    <string-array name="task_titles">
+        <item>TestLogin|Test Login</item>
+        <item>ImportAccounts|Import Accounts</item>
+    </string-array>
 
     <string name="title_activity_login">Sign in</string>
 
@@ -52,7 +56,6 @@
     <string name="bank_credentials_encryption_msg">Your credentials will be encrypted and stored in your mobile device. They will be used only after fingerprint verification.</string>
     <string name="title_activity_banks">Banks</string>
     <string name="action_delete_bank">Delete</string>
-    <string name="delete_bank_dialog_msg">Are you sure you want to delete the bank? All associated accounts will be deleted too.</string>
     <string name="delete_bank_dialog_title">Delete Bank</string>
     <string name="action_add_bank">Add</string>
     <string name="action_test_bank">Test</string>
@@ -63,4 +66,5 @@
     <string name="info">Info</string>
     <string name="setupLockScreen">Please set up a device fingerprint or lock screen to enable Fingerprint Authentication</string>
     <string name="bankAdded">Bank {} was added</string>
+    <string name="action_import_accounts">Import accounts</string>
 </resources>

@@ -2,8 +2,10 @@ package ahat.mobilemoney;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.List;
 
 import ahat.mobilemoney.Banking.BankDTO;
@@ -47,8 +49,14 @@ public class UpdateBanks extends AsyncTask<Void, Void, Long >
     {
         List<BankShort> existing = getExistingBanks();
         List<BankDTO> newBanks = Platform.GetBankList( existing );
-        Save( newBanks, existing );
-
+        try
+        {
+            Save( newBanks, existing );
+        }
+        catch( Exception e )
+        {
+            Log.e( "ERROR", e.getLocalizedMessage() );
+        }
         return new Long( newBanks.size() );
     }
 
@@ -58,7 +66,7 @@ public class UpdateBanks extends AsyncTask<Void, Void, Long >
         return storageProxy.GetAllBanksShort();
     }
 
-    private void Save( List<BankDTO> newBanks, List<BankShort> existing )
+    private void Save( List<BankDTO> newBanks, List<BankShort> existing ) throws IOException
     {
         StorageProxy storageProxy = new StorageProxy( context );
         for( final BankDTO newBank : newBanks )

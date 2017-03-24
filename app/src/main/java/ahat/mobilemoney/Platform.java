@@ -28,9 +28,18 @@ public class Platform
                                      new Task(
                                              Task.Code.TestLogin,
                                              Arrays.asList(
-                                                     new Step( Step.Code.LoadLoginScreen ),
-                                                     new Step( Step.Code.FillCredentialsAndLogin ),
-                                                     new Step( Step.Code.Logout )
+                                                     new Step( Step.Code.LoadLoginScreen, "Load Login Screen" ),
+                                                     new Step( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login" ),
+                                                     new Step( Step.Code.Logout, "Logout" )
+                                             )
+                                     ),
+                                     new Task(
+                                             Task.Code.ImportAccounts,
+                                             Arrays.asList(
+                                                     new Step( Step.Code.LoadLoginScreen, "Load Login Screen" ),
+                                                     new Step( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login" ),
+                                                     new Step( Step.Code.LoadAccountsScreen, "Load Accounts Screen" ),
+                                                     new Step( Step.Code.Logout, "Logout" )
                                              )
                                      )
                              )

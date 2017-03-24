@@ -2,6 +2,7 @@ package ahat.mobilemoney;
 
 import android.Manifest;
 import android.app.KeyguardManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,10 +41,12 @@ import com.samsung.android.sdk.pass.SpassFingerprint;
 import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankService;
+import ahat.mobilemoney.Banking.Task;
 
 public class EditBankActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_USE_FINGERPRINT = 1024;
     private BankDTO bankDTO;
+    private Bank bank;
     EditText passwordTV;
     EditText usernameTV;
     Button storeCredentialsButton;
@@ -66,7 +71,7 @@ public class EditBankActivity extends AppCompatActivity {
         TextView bankName = (TextView) findViewById(R.id.activity_edit_bank_bank_name);
         bankName.setText(bankDTO.getName());
 
-        Bank bank = BankService.GetBank(this, bankDTO);
+        bank = BankService.GetBank(this, bankDTO);
         passwordTV = (EditText) findViewById(R.id.editTextPassword);
         passwordTV.setText(bank.getPassword());
         passwordTV.addTextChangedListener(new TextWatcher() {
@@ -369,31 +374,55 @@ public class EditBankActivity extends AppCompatActivity {
                 break;
             case R.id.action_delete_bank:
                 askDeleteBank();
+                break;
+            case R.id.action_import_accounts:
+                importAccounts();
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
+    private void importAccounts()
+    {
+        String taskName = BankService.GetTaskName( this, Task.Code.ImportAccounts );
+        Task task = BankService.GetTaskOfBank( bank, Task.Code.ImportAccounts );
+        if( null == task )
+        {
+            new AlertDialog.Builder( this ).
+                setTitle( "Task " + taskName ).
+                    setIcon( android.R.drawable.ic_dialog_alert ).
+                    setMessage( "There is no task \"" + taskName + "\" for bank " + bankDTO.getName() ).
+                    setPositiveButton( android.R.string.ok, null ).
+                    create().
+                    show();
+            return;
+        }
+
+//        Utils.RunTask( this, task, taskName );
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate( R.layout.task_execution_list, null);
+//        ListView listView = (ListView) dialogView.findViewById( R.id.task_execution_listview);
+//        listView.setAdapter( new TaskExecuteDialogListAdapter( this, task ) );
+//        listView.post(new Runnable() {
+//            public void run() {
+//                listView.setAdapter( new TaskExecuteDialogListAdapter( parentActivity, task ) );
+//        }
+//    });
+
+        WebView wv = new WebView( getApplicationContext() );
+        wv.loadUrl( "https://mobile.winbank.gr/login.aspx?lg=en" );
+        new AlertDialog.Builder( this ).
+                                                         setTitle( taskName ).
+                                                         setView( dialogView ).
+                                                         setNegativeButton( android.R.string.cancel, null ).
+                                                         create().
+                                                         show();
+    }
+
     private void askDeleteBank()
     {
-        new AlertDialog.
-            Builder( this ).
-            setTitle( "Confirm Bank Delete" ).
-            setMessage( "Your bank credentials and accounts will be deleted." ).
-            setIcon( R.drawable.ic_warning_black_24dp ).
-            setNegativeButton( android.R.string.cancel, null ).
-            setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick( DialogInterface dialog, int which )
-                {
-                    BankService.UserDeleteBank( getApplicationContext(), bankDTO );
-                    Intent intent = new Intent( EditBankActivity.this, BanksActivity.class );
-                    startActivity( intent );
-                }
-            } ).
-            create().
-            show();
+        Utils.AskDeleteBank( this, bankDTO, BanksActivity.class );
     }
 }

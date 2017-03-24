@@ -58,6 +58,13 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
     }
 
     @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
+        setupBanksList();
+    }
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
@@ -84,32 +91,6 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
             case android.R.id.home:
                 finish();
                 break;
-//            case R.id.action_delete_bank:
-//                AlertDialog.Builder builder = new AlertDialog.Builder( this );
-//                builder.setMessage(R.string.delete_bank_dialog_msg)
-//                       .setTitle(R.string.delete_bank_dialog_title)
-//                       .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-//                                               @Override
-//                                               public void onClick( DialogInterface dialog, int which )
-//                                               {
-//                                                   // TODO: do the bank delete
-//                                                   SparseBooleanArray checked = listView.getCheckedItemPositions();
-//                                                   String bankNames = "";
-//                                                   for( int i = 0 ; i < listView.getAdapter().getCount() ; i++ )
-//                                                   {
-//                                                       if( checked.get( i ) )
-//                                                       {
-//                                                           bankNames = getResources().getStringArray( R.array.bank_names )[item.getOrder()] + ", ";
-//                                                       }
-//                                                   }
-//                                                   Toast.makeText( getApplicationContext(), "Deleting banks " + bankNames.substring( 0, bankNames.length()-2 ), Toast.LENGTH_LONG ).show();
-//                                               }
-//                                           }
-//                       )
-//                       .setNegativeButton( android.R.string.cancel, null )
-//                       .setIcon( R.drawable.ic_warning_black_24dp )
-//                       .create().show();
-//                break;
             default:
                 return super.onOptionsItemSelected(item);
         }

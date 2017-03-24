@@ -1,5 +1,6 @@
 package ahat.mobilemoney.Banking;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
  * A Task comprises of steps.
  */
 
-public class Task
+public class Task implements Serializable
 {
     public Task( Code code, List<Step> steps )
     {

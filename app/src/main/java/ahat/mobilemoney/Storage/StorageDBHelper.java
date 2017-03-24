@@ -19,6 +19,7 @@ public class StorageDBHelper extends SQLiteOpenHelper
                                                         StorageContract.DBBank.COLUMN_NAME_CODE + " TEXT," +
                                                         StorageContract.DBBank.COLUMN_NAME_VERSION + " INTEGER," +
                                                         StorageContract.DBBank.COLUMN_NAME_ACTIVE + " INTEGER," +
+                                                        StorageContract.DBBank.COLUMN_NAME_TASKS + " BLOB," +
                                                         StorageContract.DBBank.COLUMN_NAME_USERNAME + " TEXT," +
                                                         StorageContract.DBBank.COLUMN_NAME_PASSWORD + " TEXT)";
 
