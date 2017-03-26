@@ -44,6 +44,18 @@
             android:scaleY="1.5"
             android:tint="@color/white"
             app:srcCompat="@drawable/ic_swap_horiz_white_24dp"/>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="20dp"
+            android:scaleX="2"
+            android:scaleY="2"
+            android:tint="@color/white"
+            app:srcCompat="@drawable/ic_account_balance_wallet_black_24dp"/>
     </LinearLayout>
     <TextView
         android:layout_width="match_parent"

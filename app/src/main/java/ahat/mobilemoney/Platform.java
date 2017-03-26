@@ -7,8 +7,12 @@ import java.util.List;
 import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankShort;
+import ahat.mobilemoney.Banking.ResultContinue;
+import ahat.mobilemoney.Banking.ResultGotoLast;
+import ahat.mobilemoney.Banking.ResultTerminateTask;
 import ahat.mobilemoney.Banking.Step;
 import ahat.mobilemoney.Banking.Task;
+import ahat.mobilemoney.Banking.UrlStep;
 
 /**
  * Created by antonis on 19/3/2017.
@@ -22,25 +26,25 @@ public class Platform
     {
         return Arrays.asList(
                 new BankDTO( 3, "Alpha Bank", "00A", false,
+                     Arrays.asList(
+                         new Task(
+                             Task.Code.TestLogin,
                              Arrays.asList(
-                                     new Task(
-                                             Task.Code.TestLogin,
-                                             Arrays.asList(
-                                                     new Step( Step.Code.LoadLoginScreen, "Load Login Screen" ),
-                                                     new Step( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login" ),
-                                                     new Step( Step.Code.Logout, "Logout" )
-                                             )
-                                     ),
-                                     new Task(
-                                             Task.Code.ImportAccounts,
-                                             Arrays.asList(
-                                                     new Step( Step.Code.LoadLoginScreen, "Load Login Screen" ),
-                                                     new Step( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login" ),
-                                                     new Step( Step.Code.LoadAccountsScreen, "Load Accounts Screen" ),
-                                                     new Step( Step.Code.Logout, "Logout" )
-                                             )
-                                     )
+                                 new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", new ResultContinue(), new ResultTerminateTask() ),
+                                 new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", new ResultContinue(), new ResultTerminateTask() ),
+                                 new UrlStep( Step.Code.Logout, "Logout", new ResultTerminateTask(), new ResultTerminateTask() )
                              )
+                         ),
+                         new Task(
+                             Task.Code.ImportAccounts,
+                             Arrays.asList(
+                                 new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", new ResultContinue(), new ResultTerminateTask() ),
+                                 new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", new ResultContinue(), new ResultTerminateTask() ),
+                                 new UrlStep( Step.Code.LoadAccountsScreen, "Load Accounts Screen", new ResultContinue(), new ResultGotoLast() ),
+                                 new UrlStep( Step.Code.Logout, "Logout", new ResultTerminateTask(), new ResultTerminateTask() )
+                             )
+                         )
+                     )
                 ),
                 new BankDTO( 1, "Piraeus", "00P", false, null ),
                 new BankDTO( 1, "Eurobank", "0EU", false, null ),
