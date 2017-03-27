@@ -43,9 +43,9 @@ public class BankTaskRunner
         }
     }
 
-    private void run()
+    public void run()
     {
-        while( !finished() && !expliciltyFinished )
+        if( !finished() && !expliciltyFinished )
         {
             if( null != currentStep )
             {

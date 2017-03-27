@@ -53,7 +53,7 @@ public abstract class Step implements Serializable
     protected IResultStepAction onSuccess;
     protected IResultStepAction onFail;
 
-    public abstract boolean run( BankTaskRunner runner );
+    public abstract void run( BankTaskRunner runner );
 
     public enum Result{ Continue, EndTask, GoToLast }
 

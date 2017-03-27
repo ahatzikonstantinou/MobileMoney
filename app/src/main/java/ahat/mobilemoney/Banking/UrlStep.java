@@ -1,20 +1,28 @@
 package ahat.mobilemoney.Banking;
 
+import android.content.Context;
+import android.os.Build;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 public class UrlStep extends Step
 {
+    private final IUrlProvider urlProvider;
     private WebView webView;
+    private android.content.Context context;
 
-    public UrlStep( Code code, String name, IResultStepAction onSuccess, IResultStepAction onFail )
+    public UrlStep( Code code, String name, IUrlProvider urlProvider, IResultStepAction onSuccess, IResultStepAction onFail, Context context )
     {
         super( code, name, onSuccess, onFail );
+        this.urlProvider = urlProvider;
+        this.context = context;
 //        this.regex = regex;
         webView = null;
     }
 
     @Override
-    public boolean run( BankTaskRunner runner )
+    public void run( BankTaskRunner runner )
     {
         if( null == webView )
         {
@@ -22,7 +30,22 @@ public class UrlStep extends Step
         }
 
         //load url
+        webView.setWebViewClient(
+            new WebViewClient()
+            {
+                @Override
+                public void onPageFinished( WebView view, String url )
+                {
+                    super.onPageFinished( view, url );
+                    onFinish( runner );
+                }
 
+            } );
+        webView.loadUrl( urlProvider.getUrl() );
+    }
+
+    public void onFinish( BankTaskRunner runner )
+    {
         //check success
         boolean success = false;
         // TODO
@@ -48,13 +71,17 @@ public class UrlStep extends Step
         {
             ( ( UrlStep ) nextStep ).setWebView( webView );
         }
-
-        return success;
+        runner.run();
     }
 
     private void setupWebView()
     {
-        //TODO
+        WebView wv = new WebView( context );
+        wv.getSettings().setUseWideViewPort( true );
+        wv.getSettings().setLoadWithOverviewMode( true );
+        wv.setInitialScale( 70 );
+        wv.getSettings().setJavaScriptEnabled( true );
+        wv.getSettings().setDomStorageEnabled( true );
     }
 
     public WebView getWebView()

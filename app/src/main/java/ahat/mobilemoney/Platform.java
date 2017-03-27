@@ -1,5 +1,7 @@
 package ahat.mobilemoney;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,48 +9,52 @@ import java.util.List;
 import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankShort;
+import ahat.mobilemoney.Banking.CredentialsProvider;
+import ahat.mobilemoney.Banking.CredentialsUrlProvider;
 import ahat.mobilemoney.Banking.ResultContinue;
 import ahat.mobilemoney.Banking.ResultGotoLast;
 import ahat.mobilemoney.Banking.ResultTerminateTask;
+import ahat.mobilemoney.Banking.StaticUrlProvider;
 import ahat.mobilemoney.Banking.Step;
 import ahat.mobilemoney.Banking.Task;
 import ahat.mobilemoney.Banking.UrlStep;
 
 /**
  * Created by antonis on 19/3/2017.
- * This class handles all communication with the platform such as chekc if a given banks actions are still valid,
+ * This class handles all communication with the platform such as check if a given banks actions are still valid,
  * retrieve a user's accounts based on the user's mobile phone, etc.
  */
 
 public class Platform
 {
-    public static List<BankDTO> GetAllBanks()
+    public static List<BankDTO> GetAllBanks( Context context, CredentialsProvider credentialsProvider )
     {
         return Arrays.asList(
-                new BankDTO( 3, "Alpha Bank", "00A", false,
-                     Arrays.asList(
-                         new Task(
-                             Task.Code.TestLogin,
-                             Arrays.asList(
-                                 new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", new ResultContinue(), new ResultTerminateTask() ),
-                                 new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", new ResultContinue(), new ResultTerminateTask() ),
-                                 new UrlStep( Step.Code.Logout, "Logout", new ResultTerminateTask(), new ResultTerminateTask() )
-                             )
-                         ),
-                         new Task(
-                             Task.Code.ImportAccounts,
-                             Arrays.asList(
-                                 new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", new ResultContinue(), new ResultTerminateTask() ),
-                                 new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", new ResultContinue(), new ResultTerminateTask() ),
-                                 new UrlStep( Step.Code.LoadAccountsScreen, "Load Accounts Screen", new ResultContinue(), new ResultGotoLast() ),
-                                 new UrlStep( Step.Code.Logout, "Logout", new ResultTerminateTask(), new ResultTerminateTask() )
-                             )
+            //Test using github
+            new BankDTO( 3, "Alpha Bank", "00A", false,
+                 Arrays.asList(
+                     new Task(
+                         Task.Code.TestLogin,
+                         Arrays.asList(
+                             new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", new StaticUrlProvider("https://github.com/login"), new ResultContinue(), new ResultTerminateTask(), context ),
+                             new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", new CredentialsUrlProvider("javascript:document.getElementById('login_field').value='#username#';document.getElementById('password').value='#password#';document.getElementsByName('commit')[0].click();", credentialsProvider.getUsername(), credentialsProvider.getPassword() ), new ResultContinue(), new ResultTerminateTask(), context ),
+                             new UrlStep( Step.Code.Logout, "Logout", new StaticUrlProvider( "javascript:document.getElementsByClassName('dropdown-signout').click()" ), new ResultTerminateTask(), new ResultTerminateTask(), context )
                          )
                      )
-                ),
-                new BankDTO( 1, "Piraeus", "00P", false, null ),
-                new BankDTO( 1, "Eurobank", "0EU", false, null ),
-                new BankDTO( 1, "Ethniki", "00E", false, null )
+//                     new Task(
+//                         Task.Code.ImportAccounts,
+//                         Arrays.asList(
+//                             new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", new ResultContinue(), new ResultTerminateTask(), context ),
+//                             new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", new ResultContinue(), new ResultTerminateTask(), context ),
+//                             new UrlStep( Step.Code.LoadAccountsScreen, "Load Accounts Screen", new ResultContinue(), new ResultGotoLast(), context ),
+//                             new UrlStep( Step.Code.Logout, "Logout", new ResultTerminateTask(), new ResultTerminateTask(), context )
+//                         )
+//                     )
+                 )
+            ),
+            new BankDTO( 1, "Piraeus", "00P", false, null ),
+            new BankDTO( 1, "Eurobank", "0EU", false, null ),
+            new BankDTO( 1, "Ethniki", "00E", false, null )
         );
     }
 
