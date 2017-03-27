@@ -17,6 +17,7 @@ import ahat.mobilemoney.Banking.ResultTerminateTask;
 import ahat.mobilemoney.Banking.StaticUrlProvider;
 import ahat.mobilemoney.Banking.Step;
 import ahat.mobilemoney.Banking.Task;
+import ahat.mobilemoney.Banking.TaskDefinitions;
 import ahat.mobilemoney.Banking.UrlStep;
 
 /**
@@ -29,6 +30,9 @@ public class Platform
 {
     public static List<BankDTO> GetAllBanks( Context context, CredentialsProvider credentialsProvider )
     {
+        // TODO: remove after testing
+        TaskDefinitions td = new TaskDefinitions();
+
         return Arrays.asList(
             //Test using github
             new BankDTO( 3, "Alpha Bank", "00A", false,
@@ -36,9 +40,9 @@ public class Platform
                      new Task(
                          Task.Code.TestLogin,
                          Arrays.asList(
-                             new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", new StaticUrlProvider("https://github.com/login"), new ResultContinue(), new ResultTerminateTask(), context ),
-                             new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", new CredentialsUrlProvider("javascript:document.getElementById('login_field').value='#username#';document.getElementById('password').value='#password#';document.getElementsByName('commit')[0].click();", credentialsProvider.getUsername(), credentialsProvider.getPassword() ), new ResultContinue(), new ResultTerminateTask(), context ),
-                             new UrlStep( Step.Code.Logout, "Logout", new StaticUrlProvider( "javascript:document.getElementsByClassName('dropdown-signout').click()" ), new ResultTerminateTask(), new ResultTerminateTask(), context )
+                             new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", td.Github.login.regex, new StaticUrlProvider( td.Github.login.url), new ResultContinue(), new ResultTerminateTask(), context ),
+                             new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", td.Github.credentials.regex, new CredentialsUrlProvider( td.Github.credentials.url, credentialsProvider.getUsername(), credentialsProvider.getPassword() ), new ResultContinue(), new ResultTerminateTask(), context ),
+                             new UrlStep( Step.Code.Logout, "Logout", td.Github.logout.regex, new StaticUrlProvider( td.Github.logout.url ), new ResultTerminateTask(), new ResultTerminateTask(), context )
                          )
                      )
 //                     new Task(

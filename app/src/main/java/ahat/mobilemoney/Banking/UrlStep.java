@@ -10,45 +10,40 @@ public class UrlStep extends Step
 {
     private final IUrlProvider urlProvider;
     private WebView webView;
+    private HtmlProxy htmlProxy;
     private android.content.Context context;
+    private BankTaskRunner runner;
 
-    public UrlStep( Code code, String name, IUrlProvider urlProvider, IResultStepAction onSuccess, IResultStepAction onFail, Context context )
+    public UrlStep( Code code, String name, String regex, IUrlProvider urlProvider, IResultStepAction onSuccess, IResultStepAction onFail, Context context )
     {
         super( code, name, onSuccess, onFail );
         this.urlProvider = urlProvider;
         this.context = context;
-//        this.regex = regex;
+        this.regex = regex;
         webView = null;
+        htmlProxy = null;
+        runner = null;
     }
 
     @Override
     public void run( BankTaskRunner runner )
     {
+        this.runner = runner;
         if( null == webView )
         {
             setupWebView();
         }
 
+        //prepare the htmlproxy that will call back this step when the url/page has loaded
+        htmlProxy.setStep( this );
         //load url
-        webView.setWebViewClient(
-            new WebViewClient()
-            {
-                @Override
-                public void onPageFinished( WebView view, String url )
-                {
-                    super.onPageFinished( view, url );
-                    onFinish( runner );
-                }
-
-            } );
         webView.loadUrl( urlProvider.getUrl() );
     }
 
-    public void onFinish( BankTaskRunner runner )
+    public void onHtmlReady( String html )
     {
         //check success
-        boolean success = false;
-        // TODO
+        boolean success = html.matches( regex );
 
         Step nextStep;
         if( success )
@@ -76,12 +71,28 @@ public class UrlStep extends Step
 
     private void setupWebView()
     {
+        if( null == htmlProxy )
+        {
+            htmlProxy = new HtmlProxy();
+        }
         WebView wv = new WebView( context );
         wv.getSettings().setUseWideViewPort( true );
         wv.getSettings().setLoadWithOverviewMode( true );
         wv.setInitialScale( 70 );
         wv.getSettings().setJavaScriptEnabled( true );
         wv.getSettings().setDomStorageEnabled( true );
+        wv.addJavascriptInterface( new HtmlProxy(), "HTMLOUT" );
+        wv.setWebViewClient(
+            new WebViewClient()
+            {
+                @Override
+                public void onPageFinished( WebView view, String url )
+                {
+                    super.onPageFinished( view, url );
+                    wv.loadUrl("javascript:window.HTMLOUT.processHTML('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+                }
+
+            } );
     }
 
     public WebView getWebView()
