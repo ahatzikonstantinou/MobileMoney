@@ -6,9 +6,9 @@ package ahat.mobilemoney.Banking;
 
 public class UrlStepBuilder
 {
-    private TaskDefinitions.UrlStepDefinition stepDefinition;
+    private UrlStepDefinition stepDefinition;
 
-    public UrlStepBuilder( TaskDefinitions.UrlStepDefinition stepDefinition )
+    public UrlStepBuilder( UrlStepDefinition stepDefinition )
     {
         this.stepDefinition = stepDefinition;
     }

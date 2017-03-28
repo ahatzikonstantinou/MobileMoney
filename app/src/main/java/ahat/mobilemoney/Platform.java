@@ -41,7 +41,7 @@ public class Platform
                          Task.Code.TestLogin,
                          Arrays.asList(
                              new UrlStep( Step.Code.LoadLoginScreen, "Load Login Screen", td.Github.login.regex, new StaticUrlProvider( td.Github.login.url), new ResultContinue(), new ResultTerminateTask(), context ),
-                             new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", td.Github.credentials.regex, new CredentialsUrlProvider( td.Github.credentials.url, credentialsProvider.getUsername(), credentialsProvider.getPassword() ), new ResultContinue(), new ResultTerminateTask(), context ),
+                             new UrlStep( Step.Code.FillCredentialsAndLogin, "Fill Credentials And Login", td.Github.credentials.regex, new CredentialsUrlProvider( td.Github.credentials.url, credentialsProvider.getUsername(), credentialsProvider.getPassword() ), new ResultContinue(), new ResultGotoLast(), context ),
                              new UrlStep( Step.Code.Logout, "Logout", td.Github.logout.regex, new StaticUrlProvider( td.Github.logout.url ), new ResultTerminateTask(), new ResultTerminateTask(), context )
                          )
                      )
