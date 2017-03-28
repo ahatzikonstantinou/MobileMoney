@@ -10,13 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ahat.mobilemoney.Banking.BankDTO;
-import ahat.mobilemoney.Banking.BankService;
 
 public class BanksActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
@@ -53,7 +50,7 @@ public class BanksActivity extends AppCompatActivity implements AdapterView.OnIt
     {
         banksActivityListItems = Utils.GetBanksActivityListItems( this );
         listView = (ListView) findViewById( R.id.activity_banks_list);
-        listView.setAdapter( new BanksActivityListAdapter( this, banksActivityListItems, listView ) );
+        listView.setAdapter( new BanksActivityListAdapter( this, banksActivityListItems ) );
         listView.setOnItemClickListener( this );
     }
 

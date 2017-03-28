@@ -1,16 +1,12 @@
 package ahat.mobilemoney.Banking;
 
 import android.app.Activity;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.text.Editable;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
 
-import ahat.mobilemoney.EditBankActivity;
 import ahat.mobilemoney.Platform;
 import ahat.mobilemoney.R;
 import ahat.mobilemoney.Storage.StorageProxy;
@@ -62,15 +58,15 @@ public class BankService
         return "Not found";
     }
 
-    public static Task GetTaskOfBank( Bank bank, Task.Code taskCode )
+    public static TaskDefinition GetTaskOfBank( BankDefinition bank, Task.Code taskCode )
     {
-        List<Task> tasks = bank.getTasks();
+        List<TaskDefinition> tasks = bank.getTasks();
         if( null == tasks )
         {
             return null;
         }
 
-        for( Task task : bank.getTasks() )
+        for( TaskDefinition task : bank.getTasks() )
         {
             if( task.getCode().equals( taskCode ) )
             {
@@ -114,9 +110,9 @@ public class BankService
      * @param remoteBank
      * @return
      */
-    public static BankDTO UpdateFromPlatform( Context context, BankShort localBank, BankDTO remoteBank )
+    public static BankDefinition UpdateFromPlatform( Context context, BankShort localBank, BankDefinition remoteBank )
     {
-        return new BankDTO( remoteBank.getVersion(), remoteBank.getName(), remoteBank.getCode(), GetLocalBankDTO( context, localBank ).isActive(), remoteBank.getTasks() );
+        return new BankDefinition( remoteBank.getVersion(), remoteBank.getName(), remoteBank.getCode(), GetLocalBankDTO( context, localBank ).isActive(), remoteBank.getTasks() );
     }
 
     public static void UserClearCredentials( Context context, BankDTO bankDTO )
@@ -132,18 +128,24 @@ public class BankService
         storageProxy.StoreCredentials( bankDTO, username, password );
     }
 
-    public static Bank GetBank( Context context, BankDTO bankDTO ) throws IOException, ClassNotFoundException
+    public static BankDefinition GetBank( Context context, BankDTO bankDTO ) throws IOException, ClassNotFoundException
     {
         StorageProxy storageProxy = new StorageProxy( context );
         return storageProxy.GetBank( bankDTO.getCode() );
     }
 
-    public static BankDTO RefreshBank( Activity parentActivity, BankDTO bankDTO ) throws IOException
+    public static BankDefinition RefreshBank( Activity parentActivity, BankDTO bankDTO ) throws IOException
     {
         StorageProxy storageProxy = new StorageProxy( parentActivity );
         storageProxy.DeleteBank( bankDTO.getCode() );
         storageProxy.SaveNew( Platform.GetBankByCode( bankDTO.getCode() ) );
 
         return storageProxy.GetBankDTO( bankDTO.getCode()  );
+    }
+
+    public static UserCredentials GetUserCredentials( Context context, String bankCode )
+    {
+        StorageProxy storageProxy = new StorageProxy( context );
+        return storageProxy.GetUserCredentials( bankCode );
     }
 }

@@ -16,6 +16,6 @@ public class StaticUrlProvider implements IUrlProvider
     @Override
     public String getUrl()
     {
-        return null;
+        return url;
     }
 }

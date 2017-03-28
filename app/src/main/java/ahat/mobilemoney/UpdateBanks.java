@@ -8,7 +8,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
 
-import ahat.mobilemoney.Banking.BankDTO;
+import ahat.mobilemoney.Banking.BankDefinition;
 import ahat.mobilemoney.Banking.BankService;
 import ahat.mobilemoney.Banking.BankShort;
 import ahat.mobilemoney.Storage.StorageProxy;
@@ -48,7 +48,7 @@ public class UpdateBanks extends AsyncTask<Void, Void, Long >
     protected Long doInBackground( Void... params )
     {
         List<BankShort> existing = getExistingBanks();
-        List<BankDTO> newBanks = Platform.GetBankListExcludeExisting( existing );
+        List<BankDefinition> newBanks = Platform.GetBankListExcludeExisting( existing );
         try
         {
             Save( newBanks, existing );
@@ -66,10 +66,10 @@ public class UpdateBanks extends AsyncTask<Void, Void, Long >
         return storageProxy.GetAllBanksShort();
     }
 
-    private void Save( List<BankDTO> newBanks, List<BankShort> existing ) throws IOException
+    private void Save( List<BankDefinition> newBanks, List<BankShort> existing ) throws IOException
     {
         StorageProxy storageProxy = new StorageProxy( context );
-        for( final BankDTO newBank : newBanks )
+        for( final BankDefinition newBank : newBanks )
         {
             // add new banks
             boolean exists = false;

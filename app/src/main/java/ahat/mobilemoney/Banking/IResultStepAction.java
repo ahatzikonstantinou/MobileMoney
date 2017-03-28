@@ -1,7 +1,5 @@
 package ahat.mobilemoney.Banking;
 
-import ahat.mobilemoney.BankTaskAsync;
-
 /**
  * Created by antonis on 26/3/2017.
  *

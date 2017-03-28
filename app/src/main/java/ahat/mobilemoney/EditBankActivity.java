@@ -1,54 +1,38 @@
 package ahat.mobilemoney;
 
-import android.Manifest;
-import android.app.KeyguardManager;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.hardware.fingerprint.FingerprintManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.samsung.android.sdk.SsdkUnsupportedException;
-import com.samsung.android.sdk.pass.Spass;
-import com.samsung.android.sdk.pass.SpassFingerprint;
-
-import java.io.IOException;
-
-import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
+import ahat.mobilemoney.Banking.BankDefinition;
 import ahat.mobilemoney.Banking.BankService;
 import ahat.mobilemoney.Banking.Task;
+import ahat.mobilemoney.Banking.TaskDefinition;
+import ahat.mobilemoney.Banking.UserCredentials;
 
 public class EditBankActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_USE_FINGERPRINT = 1024;
-    private BankDTO bankDTO;
-    private Bank bank;
+    private BankDTO         bankDTO;
+    private BankDefinition  bank;
+    private UserCredentials userCredentials;
     EditText passwordTV;
     EditText usernameTV;
     Button storeCredentialsButton;
@@ -76,6 +60,7 @@ public class EditBankActivity extends AppCompatActivity {
         try
         {
             bank = BankService.GetBank(this, bankDTO);
+            userCredentials = BankService.GetUserCredentials( this, bankDTO.getCode() );
         }
         catch( Exception e )
         {
@@ -84,7 +69,7 @@ public class EditBankActivity extends AppCompatActivity {
             return ;
         }
         passwordTV = (EditText) findViewById(R.id.editTextPassword);
-        passwordTV.setText(bank.getPassword());
+        passwordTV.setText(userCredentials.getPassword());
         passwordTV.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -113,7 +98,7 @@ public class EditBankActivity extends AppCompatActivity {
         );
 
         usernameTV = (EditText) findViewById(R.id.editTextUsername);
-        usernameTV.setText(bank.getUsername());
+        usernameTV.setText(userCredentials.getUsername());
         usernameTV.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -418,7 +403,7 @@ public class EditBankActivity extends AppCompatActivity {
     private void importAccounts()
     {
         String taskName = BankService.GetTaskName( this, Task.Code.ImportAccounts );
-        Task task = BankService.GetTaskOfBank( bank, Task.Code.ImportAccounts );
+        TaskDefinition task = BankService.GetTaskOfBank( bank, Task.Code.ImportAccounts );
         if( null == task )
         {
             new AlertDialog.Builder( this ).

@@ -9,6 +9,8 @@ public class CredentialsUrlProvider implements IUrlProvider
     private final String url;
     private final String username;
     private final String password;
+    public static final String UsernamePlaceholder = "#username#";
+    public static final String PasswordPlaceholder = "#password#";
 
     public CredentialsUrlProvider( String url, String username, String password )
     {
@@ -20,6 +22,6 @@ public class CredentialsUrlProvider implements IUrlProvider
     @Override
     public String getUrl()
     {
-        return null;
+        return url.replace( UsernamePlaceholder, username ).replace( PasswordPlaceholder, password );
     }
 }

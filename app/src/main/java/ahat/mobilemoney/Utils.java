@@ -5,17 +5,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankService;
-import ahat.mobilemoney.Banking.Task;
+import ahat.mobilemoney.Banking.TaskDefinition;
 
 /**
  * Created by antonis on 11/3/2017.
@@ -79,7 +75,7 @@ public class Utils
      * @param parent
      * @param task
      */
-    public static void RunTask( Activity parentActivity, Task task, String title )
+    public static void RunTask( Activity parentActivity, TaskDefinition task, String title )
     {
         BankTaskAsync bta = new BankTaskAsync( parentActivity, task, title );
         bta.execute();

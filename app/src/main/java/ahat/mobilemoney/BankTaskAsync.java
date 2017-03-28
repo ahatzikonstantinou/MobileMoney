@@ -1,19 +1,15 @@
 package ahat.mobilemoney;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import ahat.mobilemoney.Banking.Step;
-import ahat.mobilemoney.Banking.Task;
+import ahat.mobilemoney.Banking.TaskDefinition;
 
 /**
  * Created by antonis on 23/3/2017.
@@ -22,14 +18,14 @@ import ahat.mobilemoney.Banking.Task;
 public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
 {
     private TaskExecuteDialogListAdapter listAdapter;
-    private ListView listView;
-    private View dialogView;
-    private Activity parentActivity;
-    private Task     task;
-    private String   title;
-    private AlertDialog dialog;
+    private ListView                     listView;
+    private View                         dialogView;
+    private Activity                     parentActivity;
+    private TaskDefinition               task;
+    private String                       title;
+    private AlertDialog                  dialog;
 
-    public BankTaskAsync( Activity activity, Task task, String title )
+    public BankTaskAsync( Activity activity, TaskDefinition task, String title )
     {
         this.parentActivity = activity;
         this.task = task;

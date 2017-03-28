@@ -3,15 +3,15 @@ package ahat.mobilemoney.Banking;
 /**
  * Created by antonis on 27/3/2017.
  */
-public class UrlStepDefinition
+public class StepDefinition
 {
     public String code;
     public String name;
     public String url;
     public String regex;
-    private final UrlProvider urlProvider;
-    private final ResultAction onSuccess;
-    private final ResultAction onFail;
+    public final UrlProvider urlProvider;
+    public final ResultAction onSuccess;
+    public final ResultAction onFail;
 
     public enum UrlProvider
     {
@@ -19,7 +19,7 @@ public class UrlStepDefinition
     }
 
     public enum ResultAction { Continue, TerminateTask, GotoLast }
-    public UrlStepDefinition( String code, String name, String url, String regex, UrlProvider urlProvider, ResultAction onSuccess, ResultAction onFail )
+    public StepDefinition( String code, String name, String url, String regex, UrlProvider urlProvider, ResultAction onSuccess, ResultAction onFail )
     {
         this.code = code;
         this.name = name;

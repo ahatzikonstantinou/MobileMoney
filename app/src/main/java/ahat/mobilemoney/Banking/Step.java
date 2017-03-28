@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public abstract class Step implements Serializable
 {
-    public Step( Code code, String name, IResultStepAction onSuccess, IResultStepAction onFail )
+    public Step( String code, String name, IResultStepAction onSuccess, IResultStepAction onFail )
     {
         this.code = code;
         this.name = name;
@@ -18,12 +18,12 @@ public abstract class Step implements Serializable
     }
 
     // TODO: remove Code, does not seem to be necesasry
-    public Code getCode()
+    public String getCode()
     {
         return code;
     }
 
-    public void setCode( Code code )
+    public void setCode( String code )
     {
         this.code = code;
     }
@@ -47,7 +47,7 @@ public abstract class Step implements Serializable
     {
     }
 
-    protected Code code;
+    protected String code;
 
     protected String name;
     protected IResultStepAction onSuccess;

@@ -14,7 +14,7 @@ public class UrlStep extends Step
     private android.content.Context context;
     private BankTaskRunner runner;
 
-    public UrlStep( Code code, String name, String regex, IUrlProvider urlProvider, IResultStepAction onSuccess, IResultStepAction onFail, Context context )
+    public UrlStep( String code, String name, String regex, IUrlProvider urlProvider, IResultStepAction onSuccess, IResultStepAction onFail, Context context )
     {
         super( code, name, onSuccess, onFail );
         this.urlProvider = urlProvider;

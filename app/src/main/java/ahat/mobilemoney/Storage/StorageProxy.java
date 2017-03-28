@@ -4,21 +4,20 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
-import ahat.mobilemoney.Banking.Bank;
 import ahat.mobilemoney.Banking.BankDTO;
+import ahat.mobilemoney.Banking.BankDefinition;
 import ahat.mobilemoney.Banking.BankShort;
-import ahat.mobilemoney.Banking.Task;
+import ahat.mobilemoney.Banking.TaskDefinition;
+import ahat.mobilemoney.Banking.UserCredentials;
 
 /**
  * Created by antonis on 19/3/2017.
@@ -66,19 +65,19 @@ public class StorageProxy
         return GetAllBanksNoTasks( StorageDBHelper.SQL_SELECT_ALL, null );
     }
 
-    private List<Task> BytesToTasks( byte[] buffer ) throws IOException, ClassNotFoundException
+    private List<TaskDefinition> BytesToTasks( byte[] buffer ) throws IOException, ClassNotFoundException
     {
         ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream( buffer) );
         try
         {
-            return new ArrayList<>( (List<Task>) ois.readObject() );
+            return new ArrayList<>( (List<TaskDefinition>) ois.readObject() );
         }
         finally
         {
             ois.close();
         }
     }
-    private byte[] TasksToBytes( List<Task> tasks ) throws IOException
+    private byte[] TasksToBytes( List<TaskDefinition> tasks ) throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = null;
@@ -88,7 +87,7 @@ public class StorageProxy
         return bos.toByteArray();
     }
 
-    public void SaveNew( BankDTO newBank ) throws IOException
+    public void SaveNew( BankDefinition newBank ) throws IOException
     {
         byte[] tasks = TasksToBytes( newBank.getTasks() );
 
@@ -104,7 +103,7 @@ public class StorageProxy
         long newRowId = db.insert( StorageContract.DBBank.TABLE_NAME, null, values );
     }
 
-    public void Update( BankDTO newBank ) throws IOException
+    public void Update( BankDefinition newBank ) throws IOException
     {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -232,9 +231,9 @@ public class StorageProxy
         db.update( StorageContract.DBBank.TABLE_NAME, values, selection, selectionArgs );
     }
 
-    public Bank GetBank( String code ) throws IOException, ClassNotFoundException
+    public BankDefinition GetBank( String code ) throws IOException, ClassNotFoundException
     {
-        Bank bank = new Bank();
+        BankDefinition bank = new BankDefinition();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         try
         {
@@ -244,10 +243,7 @@ public class StorageProxy
                 bank.setVersion( cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ) );
                 bank.setName( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_NAME ) ) );
                 bank.setCode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ) );
-                bank.setPassword( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_PASSWORD ) ) );
-                bank.setUsername( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_USERNAME ) ) );
-//                bank.setTasks( BytesToTasks( Base64.decode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ), Base64.NO_WRAP ) ) );
-            bank.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
+                bank.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
 
                 return bank;
             }
@@ -267,9 +263,9 @@ public class StorageProxy
         db.delete( StorageContract.DBBank.TABLE_NAME, selection, selectionArgs );
     }
 
-    public BankDTO GetBankDTO( String code )
+    public BankDefinition GetBankDTO( String code )
     {
-        BankDTO bankDTO = new BankDTO();
+        BankDefinition bankDefinition = new BankDefinition();
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = null;
@@ -278,12 +274,11 @@ public class StorageProxy
             cursor = db.rawQuery( StorageDBHelper.SQL_SELECT_BY_CODE, new String[]{ code } );
             if( cursor.moveToNext() )
             {
-                bankDTO.setVersion( cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ) );
-                bankDTO.setName( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_NAME ) ) );
-                bankDTO.setCode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ) );
-                bankDTO.setActive( cursor.getInt( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_ACTIVE ) ) == 1 );
-//                bankDTO.setTasks( BytesToTasks( Base64.decode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ), Base64.NO_WRAP ) ) );
-                bankDTO.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
+                bankDefinition.setVersion( cursor.getLong( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_VERSION ) ) );
+                bankDefinition.setName( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_NAME ) ) );
+                bankDefinition.setCode( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_CODE ) ) );
+                bankDefinition.setActive( cursor.getInt( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_ACTIVE ) ) == 1 );
+                bankDefinition.setTasks( BytesToTasks( cursor.getBlob( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_TASKS ) ) ) );
             }
         }
         catch( ClassNotFoundException e )
@@ -301,6 +296,28 @@ public class StorageProxy
                 cursor.close();
             }
         }
-        return bankDTO;
+        return bankDefinition;
+    }
+
+    public UserCredentials GetUserCredentials( String bankCode )
+    {
+        UserCredentials uc = new UserCredentials();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        try
+        {
+            cursor = db.rawQuery( StorageDBHelper.SQL_SELECT_BY_CODE, new String[]{ bankCode } );
+            if( cursor.moveToNext() )
+            {
+                uc.setPassword( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_PASSWORD ) ) );
+                uc.setUsername( cursor.getString( cursor.getColumnIndex( StorageContract.DBBank.COLUMN_NAME_USERNAME ) ) );
+
+                return uc;
+            }
+        }
+        finally
+        {
+            cursor.close();
+        }
+        return null;
     }
 }

@@ -9,45 +9,45 @@ public class TaskDefinitions
 
     public class TestLoginTaskDefinition
     {
-        public TestLoginTaskDefinition( UrlStepDefinition login, UrlStepDefinition credentials, UrlStepDefinition logout )
+        public TestLoginTaskDefinition( StepDefinition login, StepDefinition credentials, StepDefinition logout )
         {
             this.login = login;
             this.credentials = credentials;
             this.logout = logout;
         }
 
-        public UrlStepDefinition login;
-        public UrlStepDefinition credentials;
-        public UrlStepDefinition logout;
+        public StepDefinition login;
+        public StepDefinition credentials;
+        public StepDefinition logout;
     }
 
     public final TestLoginTaskDefinition Github = new TestLoginTaskDefinition(
-      new UrlStepDefinition(
+      new StepDefinition(
               "login",
               "login",
               "https://github.com/login",
               "<input.*id=\"login_field\" name=\"login\".*\\/>[.\\s\\S]*<input.*id=\"password\" name=\"password\".*\\/>[.\\s\\S]*<input.*name=\"commit\".*\\/>",
-              UrlStepDefinition.UrlProvider.Static,
-              UrlStepDefinition.ResultAction.Continue,
-              UrlStepDefinition.ResultAction.TerminateTask
+              StepDefinition.UrlProvider.Static,
+              StepDefinition.ResultAction.Continue,
+              StepDefinition.ResultAction.TerminateTask
       ),
-        new UrlStepDefinition(
+        new StepDefinition(
                 "credentials",
                 "credentials",
-                "javascript:document.getElementById('login_field').value='#username#';document.getElementById('password').value='#password#';document.getElementsByName('commit')[0].click();",
+                "javascript:document.getElementById('login_field').value='" + CredentialsUrlProvider.UsernamePlaceholder + "';document.getElementById('password').value='" + CredentialsUrlProvider.PasswordPlaceholder + "';document.getElementsByName('commit')[0].click();",
                 "<button type=\"submit\" class=\"dropdown-item dropdown-signout\" data-ga-click=\"Header, sign out, icon:logout\">",
-                UrlStepDefinition.UrlProvider.Credentials,
-                UrlStepDefinition.ResultAction.Continue,
-                UrlStepDefinition.ResultAction.GotoLast
+                StepDefinition.UrlProvider.Credentials,
+                StepDefinition.ResultAction.Continue,
+                StepDefinition.ResultAction.GotoLast
         ),
-        new UrlStepDefinition(
+        new StepDefinition(
                 "logout",
                 "logout",
                 "javascript:document.getElementsByClassName('dropdown-signout').click()",
                 "<a class=\"text-bold site-header-link\" href=\"\\/login\".*<\\/a>",
-                UrlStepDefinition.UrlProvider.Static,
-                UrlStepDefinition.ResultAction.TerminateTask,
-                UrlStepDefinition.ResultAction.TerminateTask
+                StepDefinition.UrlProvider.Static,
+                StepDefinition.ResultAction.TerminateTask,
+                StepDefinition.ResultAction.TerminateTask
         )
     );
 }
