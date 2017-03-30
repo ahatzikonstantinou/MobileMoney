@@ -9,18 +9,18 @@ import java.util.List;
 
 public class TaskDefinition implements Serializable
 {
-    public TaskDefinition( String code, List<StepDefinition> steps )
+    public TaskDefinition( Task.Code code, List<StepDefinition> steps )
     {
         this.code = code;
         this.steps = steps;
     }
 
-    public String getCode()
+    public Task.Code getCode()
     {
         return code;
     }
 
-    public void setCode( String code )
+    public void setCode( Task.Code code )
     {
         this.code = code;
     }
@@ -35,7 +35,6 @@ public class TaskDefinition implements Serializable
         this.steps = steps;
     }
 
-    public enum Code { TestLogin, ImportAccounts };
-    private String  code;
+    private Task.Code  code;
     private List<StepDefinition> steps;
 }

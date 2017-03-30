@@ -68,4 +68,6 @@
     <string name="bankAdded">Bank {} was added</string>
     <string name="action_import_accounts">Import accounts</string>
     <string name="action_rerfesh_bank">Refresh Bank</string>
+    <string name="tab_task_steps">Steps</string>
+    <string name="tab_task_webview">Web</string>
 </resources>

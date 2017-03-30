@@ -6,6 +6,7 @@ import java.util.List;
 
 import ahat.mobilemoney.Banking.BankDefinition;
 import ahat.mobilemoney.Banking.BankShort;
+import ahat.mobilemoney.Banking.Task;
 import ahat.mobilemoney.Banking.TaskDefinition;
 import ahat.mobilemoney.Banking.TaskDefinitions;
 
@@ -27,7 +28,11 @@ public class Platform
             new BankDefinition( 3, "Alpha Bank", "00A", false,
                 Arrays.asList(
                      new TaskDefinition(
-                         "TestLogin",
+                         Task.Code.TestLogin,
+                         Arrays.asList( td.Github.login, td.Github.credentials, td.Github.logout )
+                     ),
+                     new TaskDefinition(
+                         Task.Code.ImportAccounts,
                          Arrays.asList( td.Github.login, td.Github.credentials, td.Github.logout )
                      )
                 )

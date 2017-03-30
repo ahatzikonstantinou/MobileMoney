@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ public class Utils
      * @param parent
      * @param task
      */
-    public static void RunTask( Activity parentActivity, TaskDefinition task, String title )
+    public static void RunTask( AppCompatActivity parentActivity, TaskDefinition task, String title )
     {
         BankTaskAsync bta = new BankTaskAsync( parentActivity, task, title );
         bta.execute();

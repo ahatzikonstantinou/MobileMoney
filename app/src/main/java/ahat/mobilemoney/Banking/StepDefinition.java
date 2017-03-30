@@ -1,9 +1,11 @@
 package ahat.mobilemoney.Banking;
 
+import java.io.Serializable;
+
 /**
  * Created by antonis on 27/3/2017.
  */
-public class StepDefinition
+public class StepDefinition implements Serializable
 {
     public String code;
     public String name;
