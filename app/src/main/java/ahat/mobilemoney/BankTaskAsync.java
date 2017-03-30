@@ -85,6 +85,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         LayoutInflater inflater = parentActivity.getLayoutInflater();
         dialogView = inflater.inflate( R.layout.task_execution_tabs, null);
 
+        // tabs added according to http://www.truiton.com/2015/06/android-tabs-example-fragments-viewpager/
         TabLayout tabs = (TabLayout) dialogView.findViewById( R.id.tabs );
         tabs.addTab( tabs.newTab().setText( R.string.tab_task_steps ).setIcon( R.drawable.ic_view_list_black_24dp ) );
         tabs.addTab( tabs.newTab().setText( R.string.tab_task_webview ).setIcon( R.drawable.ic_language_black_24dp ) );
