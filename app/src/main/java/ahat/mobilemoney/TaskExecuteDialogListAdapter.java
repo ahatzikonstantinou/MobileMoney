@@ -21,7 +21,7 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
     private Context        context;
     private TaskDefinition task;
     private int            runningStep;
-    private Boolean[]      results;
+    private StepExecutionStatus[]      results;
 
     public void setRunningStep( int value ) { runningStep = value; }
     public int getRunningStep(){ return runningStep; }
@@ -29,8 +29,8 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
     public void setTask( TaskDefinition task ){ this.task = task; }
     public TaskDefinition getTask(){ return task; }
 
-    public Boolean[] getResults(){ return results; }
-    public void setResults( Boolean[] results ){ this.results = results; }
+    public StepExecutionStatus[] getResults(){ return results; }
+    public void setResults( StepExecutionStatus[] results ){ this.results = results; }
 
     public TaskExecuteDialogListAdapter( Context context, TaskDefinition task, int runningStep )
     {
@@ -107,37 +107,71 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
             ProgressBar pb = (ProgressBar) convertView.findViewById( R.id.progressBar );
             ImageView ivsf = (ImageView) convertView.findViewById( R.id.imageViewStepFail );
             ImageView ivss = (ImageView) convertView.findViewById( R.id.imageViewStepSuccess );
-            if( position > runningStep )
+
+            switch( results[position] )
             {
-                //Step has not run yet
-                stepTV.setAlpha( 0.3f );
-                ivss.setVisibility( View.INVISIBLE );
-                ivsf.setVisibility( View.INVISIBLE );
-                pb.setVisibility( View.INVISIBLE );
-            }
-            else if( runningStep == position )
-            {
-                stepTV.setAlpha( 1f );
-                ivss.setVisibility( View.INVISIBLE );
-                ivsf.setVisibility( View.INVISIBLE );
-                pb.setVisibility( View.VISIBLE );
-            }
-            else
-            {
-                // step has already executed
-                stepTV.setAlpha( 1f );
-                if( results[position] ) //success
-                {
+                case NOT_EXECUTED:
+                    stepTV.setAlpha( 0.3f );
+                    ivss.setVisibility( View.INVISIBLE );
+                    ivsf.setVisibility( View.INVISIBLE );
+                    pb.setVisibility( View.INVISIBLE );
+                    break;
+                case PENDING_CONFIRMATION:
+                    stepTV.setAlpha( 1f );
+                    ivss.setVisibility( View.INVISIBLE );
+                    ivsf.setVisibility( View.INVISIBLE );
+                    pb.setVisibility( View.INVISIBLE );
+                    break;
+                case EXECUTING:
+                    stepTV.setAlpha( 1f );
+                    ivss.setVisibility( View.INVISIBLE );
+                    ivsf.setVisibility( View.INVISIBLE );
+                    pb.setVisibility( View.VISIBLE );
+                    break;
+                case SUCCESS:
+                    stepTV.setAlpha( 1f );
                     ivss.setVisibility( View.VISIBLE );
                     ivsf.setVisibility( View.INVISIBLE );
-                }
-                else
-                {
+                    pb.setVisibility( View.INVISIBLE );
+                    break;
+                case FAIL:
+                    stepTV.setAlpha( 1f );
                     ivss.setVisibility( View.INVISIBLE );
                     ivsf.setVisibility( View.VISIBLE );
-                }
-                pb.setVisibility( View.INVISIBLE );
+                    pb.setVisibility( View.INVISIBLE );
+                    break;
             }
+//            if( position > runningStep )
+//            {
+//                //Step has not run yet
+//                stepTV.setAlpha( 0.3f );
+//                ivss.setVisibility( View.INVISIBLE );
+//                ivsf.setVisibility( View.INVISIBLE );
+//                pb.setVisibility( View.INVISIBLE );
+//            }
+//            else if( runningStep == position )
+//            {
+//                stepTV.setAlpha( 1f );
+//                ivss.setVisibility( View.INVISIBLE );
+//                ivsf.setVisibility( View.INVISIBLE );
+//                pb.setVisibility( View.VISIBLE );
+//            }
+//            else
+//            {
+//                // step has already executed
+//                stepTV.setAlpha( 1f );
+//                if( results[position] ) //success
+//                {
+//                    ivss.setVisibility( View.VISIBLE );
+//                    ivsf.setVisibility( View.INVISIBLE );
+//                }
+//                else
+//                {
+//                    ivss.setVisibility( View.INVISIBLE );
+//                    ivsf.setVisibility( View.VISIBLE );
+//                }
+//                pb.setVisibility( View.INVISIBLE );
+//            }
         }
         return convertView;
     }

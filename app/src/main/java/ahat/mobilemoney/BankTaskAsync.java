@@ -32,7 +32,7 @@ import ahat.mobilemoney.Banking.TaskDefinition;
  * Created by antonis on 23/3/2017.
  */
 
-public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
+public class BankTaskAsync extends AsyncTask<Void, StepExecutionStatus, Boolean>
 {
     private View              dialogView;
     private AppCompatActivity parentActivity;
@@ -46,6 +46,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
     private CheckBox                     askContinueCbx;
     private Boolean                      continueExecution;
     private Boolean                      askContinue;
+    StepExecutionStatus[]                results;
 
     private void setupListView( View view, TaskExecuteDialogListAdapter listAdapter )
     {
@@ -58,7 +59,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         webView = (WebView) view.findViewById( R.id.task_execution_web );
     }
 
-    public void MarkRunningStep( Boolean[] progress )
+    public void MarkRunningStep( StepExecutionStatus[] progress )
     {
         listAdapter.setRunningStep( listAdapter.getRunningStep() + 1 );
         listAdapter.setResults( progress );
@@ -89,7 +90,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
             listView.setAdapter( listAdapter );
         }
 
-        public void MarkRunningStep( Boolean[] progress )
+        public void MarkRunningStep( StepExecutionStatus[] progress )
         {
             listAdapter.setRunningStep( listAdapter.getRunningStep() + 1 );
             listAdapter.setResults( progress );
@@ -113,6 +114,8 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         this.title = title;
         this.continueExecution = true;
         this.askContinue = true;
+        this.results = new StepExecutionStatus[task.getSteps().size()];
+        for( int r = 0 ; r < results.length ; r++ ) { results[r] = StepExecutionStatus.NOT_EXECUTED; }
         dialog = BuildTaskDialog();
     }
 
@@ -141,6 +144,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         tabs.addTab( tabs.newTab().setText( R.string.tab_task_webview ).setIcon( R.drawable.ic_language_black_24dp ) );
 
         listAdapter = new TaskExecuteDialogListAdapter( parentActivity, task, -1 );
+        listAdapter.setResults( results );
         setupListView( dialogView, listAdapter );
 
         setupWebView( dialogView );
@@ -272,7 +276,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
     }
 
     @Override
-    protected void onProgressUpdate( Boolean... progress)
+    protected void onProgressUpdate( StepExecutionStatus... progress)
     {
         super.onProgressUpdate(progress);
 //        Toast.makeText( parentActivity, new String("Progress: " + progress[0]), Toast.LENGTH_LONG ).show();
@@ -281,7 +285,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
 
     }
 
-    private void markRunningStep( Boolean[] progress )
+    private void markRunningStep( StepExecutionStatus[] progress )
     {
 //        stepsFragment.MarkRunningStep( progress );
         MarkRunningStep( progress );
@@ -304,23 +308,26 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
     @Override
     protected Boolean doInBackground( Void... params )
     {
-        Boolean[] results = new Boolean[task.getSteps().size()];
         for( int i = 0 ; i < task.getSteps().size() ; i++ )
         {
-            continueExecution = !askContinue;
-
-            results[i] = i%2 == 0;
+            results[i] = StepExecutionStatus.PENDING_CONFIRMATION;
             publishProgress( results );
-
             while( !continueExecution )
             {
                 SystemClock.sleep( 1000 );
             }
+            continueExecution = !askContinue;
+
+            results[i] = StepExecutionStatus.EXECUTING;
+            publishProgress( results );
+
 
             //TODO: replace SystemClock.sleep( 5000 ); with actual work
             SystemClock.sleep( 5000 );
+            results[i] = i%2 == 0 ? StepExecutionStatus.SUCCESS : StepExecutionStatus.FAIL;
+            publishProgress( results );
         }
-        publishProgress( results );
+//        publishProgress( results );
 //        SystemClock.sleep( 3000 );
         return true;
     }
