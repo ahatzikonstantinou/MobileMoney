@@ -9,6 +9,6 @@ public class ResultTerminateTask implements IResultStepAction
     @Override
     public void execute( Step step, BankTaskRunner runner )
     {
-        runner.setExpliciltyFinished( true );
+        runner.setExplicitlyFinished( true );
     }
 }

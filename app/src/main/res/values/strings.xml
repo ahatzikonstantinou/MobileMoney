@@ -70,4 +70,6 @@
     <string name="action_rerfesh_bank">Refresh Bank</string>
     <string name="tab_task_steps">Steps</string>
     <string name="tab_task_webview">Web</string>
+    <string name="task_ask_continue">Stop between steps</string>
+    <string name="task_continue_button_txt">Continue</string>
 </resources>

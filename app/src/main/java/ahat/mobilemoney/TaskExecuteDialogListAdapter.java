@@ -110,7 +110,7 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
             if( position > runningStep )
             {
                 //Step has not run yet
-                stepTV.setAlpha( 0.5f );
+                stepTV.setAlpha( 0.3f );
                 ivss.setVisibility( View.INVISIBLE );
                 ivsf.setVisibility( View.INVISIBLE );
                 pb.setVisibility( View.INVISIBLE );

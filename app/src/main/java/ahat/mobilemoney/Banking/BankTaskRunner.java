@@ -15,13 +15,13 @@ public class BankTaskRunner
     private Step currentStep;
     public Step getCurrentStep() { return currentStep; }
 
-    private boolean expliciltyFinished;
+    private boolean explicitlyFinished;
 
     public BankTaskRunner( Task task )
     {
         this.task = task;
         currentStep = null;
-        expliciltyFinished = false;
+        explicitlyFinished = false;
     }
 
     public Task getTask()
@@ -45,7 +45,7 @@ public class BankTaskRunner
 
     public void run()
     {
-        if( !finished() && !expliciltyFinished )
+        if( !finished() && !explicitlyFinished )
         {
             if( null != currentStep )
             {
@@ -97,13 +97,13 @@ public class BankTaskRunner
         return null == currentStep;
     }
 
-    public boolean isExpliciltyFinished()
+    public boolean isExplicitlyFinished()
     {
-        return expliciltyFinished;
+        return explicitlyFinished;
     }
 
-    public void setExpliciltyFinished( boolean expliciltyFinished )
+    public void setExplicitlyFinished( boolean explicitlyFinished )
     {
-        this.expliciltyFinished = expliciltyFinished;
+        this.explicitlyFinished = explicitlyFinished;
     }
 }

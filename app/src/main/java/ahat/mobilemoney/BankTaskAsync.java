@@ -1,21 +1,30 @@
 package ahat.mobilemoney;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.TabLayout.Tab;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ButtonBarLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import ahat.mobilemoney.Banking.TaskDefinition;
 
@@ -25,12 +34,37 @@ import ahat.mobilemoney.Banking.TaskDefinition;
 
 public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
 {
-    private View                         dialogView;
-    private AppCompatActivity            parentActivity;
-    private TaskDefinition               task;
-    private String                       title;
-    private AlertDialog                  dialog;
-    private StepsFragment                stepsFragment;
+    private View              dialogView;
+    private AppCompatActivity parentActivity;
+    private TaskDefinition    task;
+    private String            title;
+    private AlertDialog       dialog;
+//    private StepsFragment     stepsFragment;
+    private TaskExecuteDialogListAdapter listAdapter;
+    private ListView                     listView;
+    private WebView                      webView;
+    private CheckBox                     askContinueCbx;
+    private Boolean                      continueExecution;
+    private Boolean                      askContinue;
+
+    private void setupListView( View view, TaskExecuteDialogListAdapter listAdapter )
+    {
+        listView = (ListView) view.findViewById( R.id.task_execution_listview);
+        listView.setAdapter( listAdapter );
+    }
+
+    private void setupWebView( View view )
+    {
+        webView = (WebView) view.findViewById( R.id.task_execution_web );
+    }
+
+    public void MarkRunningStep( Boolean[] progress )
+    {
+        listAdapter.setRunningStep( listAdapter.getRunningStep() + 1 );
+        listAdapter.setResults( progress );
+        listAdapter.setTask( task );
+        setupListView( dialogView, listAdapter );
+    }
 
     public static class StepsFragment extends Fragment
     {
@@ -42,10 +76,10 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            this.task = (TaskDefinition) savedInstanceState.getSerializable( "task" );
+//            this.task = (TaskDefinition) savedInstanceState.getSerializable( "task" );
             view = (View) inflater.inflate(R.layout.task_execution_list, container, false);
-            this.listAdapter = new TaskExecuteDialogListAdapter( this.getContext(), task, -1 );
-            setupListView( view, listAdapter );
+//            this.listAdapter = new TaskExecuteDialogListAdapter( this.getContext(), task, -1 );
+//            setupListView( view, listAdapter );
             return view;
         }
 
@@ -77,63 +111,112 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         this.parentActivity = activity;
         this.task = task;
         this.title = title;
+        this.continueExecution = true;
+        this.askContinue = true;
         dialog = BuildTaskDialog();
     }
+
 
     public AlertDialog BuildTaskDialog()
     {
         LayoutInflater inflater = parentActivity.getLayoutInflater();
         dialogView = inflater.inflate( R.layout.task_execution_tabs, null);
 
+        askContinueCbx = (CheckBox) dialogView.findViewById( R.id.task_ask_continue_cbx );
+        askContinueCbx.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View v )
+            {
+                askContinue = askContinueCbx.isChecked();
+                continueExecution = !askContinue;
+                dialog.getButton( AlertDialog.BUTTON_NEUTRAL ).setVisibility( askContinue ? View.VISIBLE : View.GONE );
+            }
+        } );
+        askContinue = askContinueCbx.isChecked();
+        continueExecution = !askContinue;
+
         // tabs added according to http://www.truiton.com/2015/06/android-tabs-example-fragments-viewpager/
         TabLayout tabs = (TabLayout) dialogView.findViewById( R.id.tabs );
         tabs.addTab( tabs.newTab().setText( R.string.tab_task_steps ).setIcon( R.drawable.ic_view_list_black_24dp ) );
         tabs.addTab( tabs.newTab().setText( R.string.tab_task_webview ).setIcon( R.drawable.ic_language_black_24dp ) );
 
-        ViewPager pager = (ViewPager) dialogView.findViewById( R.id.pager);
-        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener( tabs ));
+        listAdapter = new TaskExecuteDialogListAdapter( parentActivity, task, -1 );
+        setupListView( dialogView, listAdapter );
 
-        pager.setAdapter( new FragmentPagerAdapter( parentActivity.getSupportFragmentManager() ) {
+        setupWebView( dialogView );
+
+// ahat: the following does not seem to work. Therefore I placed a webview in the dialog and I
+// manipulate it directly
+//        ViewPager pager = (ViewPager) dialogView.findViewById( R.id.pager);
+//        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener( tabs ));
+//
+//        pager.setAdapter( new FragmentPagerAdapter( parentActivity.getSupportFragmentManager() ) {
+//            @Override
+//            public Fragment getItem( int position )
+//            {
+//                // getItem is called to instantiate the fragment for the given page.
+//                if( 0 == position )
+//                {
+//                    // get an instance of FragmentTransaction from your Activity
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable( "task", task );
+//                    stepsFragment = new StepsFragment() ;
+//                    stepsFragment.setArguments( bundle );
+//                    return stepsFragment;
+//                }
+//                return new WebFragment();
+//            }
+//
+//            @Override
+//            public int getCount()
+//            {
+//                return 2;
+//            }
+//        } );
+//        tabs.setupWithViewPager(pager);
+
+        tabs.addOnTabSelectedListener( new TabLayout.OnTabSelectedListener()
+        {
             @Override
-            public Fragment getItem( int position )
+            public void onTabSelected(TabLayout.Tab tab)
             {
-                // getItem is called to instantiate the fragment for the given page.
-                if( 0 == position )
+                ListView lv = (ListView) dialogView.findViewById( R.id.task_execution_listview );
+                WebView wv = (WebView) dialogView.findViewById( R.id.task_execution_web );
+                if( 0 == tab.getPosition() )
                 {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable( "task", task );
-                    stepsFragment = new StepsFragment() ;
-                    stepsFragment.setArguments( bundle );
-                    return stepsFragment;
+                    lv.setVisibility( View.VISIBLE );
+                    wv.setVisibility( View.GONE );
                 }
-                return new WebFragment();
+                else
+                {
+                    lv.setVisibility( View.GONE );
+                    wv.setVisibility( View.VISIBLE );
+                }
             }
 
             @Override
-            public int getCount()
+            public void onTabUnselected(TabLayout.Tab tab)
             {
-                return 2;
-            }
-        } );
-        tabs.setupWithViewPager(pager);
-        /*
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
+                ListView lv = (ListView) dialogView.findViewById( R.id.task_execution_listview );
+                WebView wv = (WebView) dialogView.findViewById( R.id.task_execution_web );
+                if( 0 == tab.getPosition() )
+                {
+                    lv.setVisibility( View.GONE );
+                    wv.setVisibility( View.VISIBLE );
+                }
+                else
+                {
+                    lv.setVisibility( View.VISIBLE );
+                    wv.setVisibility( View.GONE );
+                }
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
+            public void onTabReselected(TabLayout.Tab tab)
+            {
+                onTabSelected( tab );
             }
         });
-         */
 
         return new AlertDialog.Builder( parentActivity ).
              setTitle( title ).
@@ -146,6 +229,7 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
                      cancel( true );
                  }
              } ).
+            setNeutralButton( R.string.task_continue_button_txt, null).
             setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener()
             {
                 @Override
@@ -163,6 +247,14 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         super.onPreExecute();
         dialog.show();
         dialog.getButton( AlertDialog.BUTTON_POSITIVE ).setVisibility( View.GONE );
+        dialog.getButton( AlertDialog.BUTTON_NEUTRAL ).setVisibility( askContinue ? View.VISIBLE : View.GONE );
+        // ahat: the setOnClickListener must be done AFTER the dialog.show() in order for the button to NOT dismiss the dialog
+        // see http://stackoverflow.com/questions/6142308/android-dialog-keep-dialog-open-when-button-is-pressed
+        dialog.getButton( AlertDialog.BUTTON_NEUTRAL ).setOnClickListener( new View.OnClickListener()
+        {
+            @Override
+            public void onClick( View v ) { continueExecution = true; }
+        });
     }
 
     @Override
@@ -170,10 +262,12 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
     {
         if( dialog.isShowing() )
         {
-            dialog.getButton( AlertDialog.BUTTON_NEGATIVE ).setVisibility( View.GONE );
+            dialog.getButton( AlertDialog.BUTTON_NEGATIVE ).setVisibility( View. GONE );
+            askContinueCbx.setEnabled( false );
+            dialog.getButton( AlertDialog.BUTTON_NEUTRAL ).setVisibility( View. GONE );
             dialog.getButton( AlertDialog.BUTTON_POSITIVE ).setVisibility( View.VISIBLE );
         }
-//        Toast.makeText( parentActivity, new String("Task " + title + " finished."), Toast.LENGTH_LONG ).show();
+        Toast.makeText( parentActivity, new String("Task " + title + " finished."), Toast.LENGTH_LONG ).show();
         super.onPostExecute(result);
     }
 
@@ -183,11 +277,14 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         super.onProgressUpdate(progress);
 //        Toast.makeText( parentActivity, new String("Progress: " + progress[0]), Toast.LENGTH_LONG ).show();
         markRunningStep( progress );
+
+
     }
 
     private void markRunningStep( Boolean[] progress )
     {
-        stepsFragment.MarkRunningStep( progress );
+//        stepsFragment.MarkRunningStep( progress );
+        MarkRunningStep( progress );
     }
 
     /**
@@ -210,10 +307,17 @@ public class BankTaskAsync extends AsyncTask<Void, Boolean, Boolean>
         Boolean[] results = new Boolean[task.getSteps().size()];
         for( int i = 0 ; i < task.getSteps().size() ; i++ )
         {
+            continueExecution = !askContinue;
+
             results[i] = i%2 == 0;
             publishProgress( results );
 
-            //TODO: replaace SystemClock.sleep( 5000 ); with actual work
+            while( !continueExecution )
+            {
+                SystemClock.sleep( 1000 );
+            }
+
+            //TODO: replace SystemClock.sleep( 5000 ); with actual work
             SystemClock.sleep( 5000 );
         }
         publishProgress( results );

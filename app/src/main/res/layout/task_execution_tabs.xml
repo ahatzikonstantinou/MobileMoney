@@ -12,29 +12,48 @@
         app:tabMode="fixed"
         app:tabGravity="fill" >
 
-        <android.support.design.widget.TabItem
-            android:id="@+id/tab_task_steps"
-            android:text="@string/tab_task_steps"
-            android:icon="@drawable/ic_view_list_black_24dp"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
+        <!--<android.support.design.widget.TabItem-->
+            <!--android:id="@+id/tab_task_steps"-->
+            <!--android:text="@string/tab_task_steps"-->
+            <!--android:icon="@drawable/ic_view_list_black_24dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_width="match_parent"/>-->
 
-        <android.support.design.widget.TabItem
-            android:id="@+id/tab_task_webview"
-            android:text="@string/tab_task_webview"
-            android:icon="@drawable/ic_language_black_24dp"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
+        <!--<android.support.design.widget.TabItem-->
+            <!--android:id="@+id/tab_task_webview"-->
+            <!--android:text="@string/tab_task_webview"-->
+            <!--android:icon="@drawable/ic_language_black_24dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_width="match_parent"/>-->
 
     </android.support.design.widget.TabLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        >
+    <include layout="@layout/task_execution_list"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
 
+    <include layout="@layout/task_execution_web"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+    </LinearLayout>
 
-    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-                                       xmlns:tools="http://schemas.android.com/tools"
-                                       android:id="@+id/pager"
-                                       android:layout_width="match_parent"
-                                       android:layout_height="match_parent"
-                                       tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">
+    <CheckBox
+        android:id="@+id/task_ask_continue_cbx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/task_ask_continue"/>
 
-    </android.support.v4.view.ViewPager>
+    <!--<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"-->
+                                       <!--xmlns:tools="http://schemas.android.com/tools"-->
+                                       <!--android:id="@+id/pager"-->
+                                       <!--android:layout_width="match_parent"-->
+                                       <!--android:layout_height="match_parent"-->
+                                       <!--tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">-->
+
+    <!--</android.support.v4.view.ViewPager>-->
 </LinearLayout>

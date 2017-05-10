@@ -29,11 +29,11 @@ public class Platform
                 Arrays.asList(
                      new TaskDefinition(
                          Task.Code.TestLogin,
-                         Arrays.asList( td.Github.login, td.Github.credentials, td.Github.logout )
+                         Arrays.asList( td.Github.login, td.Github.credentials, td.Github.submit, td.Github.logout )
                      ),
                      new TaskDefinition(
                          Task.Code.ImportAccounts,
-                         Arrays.asList( td.Github.login, td.Github.credentials, td.Github.logout )
+                         Arrays.asList( td.Github.login, td.Github.credentials, td.Github.submit, td.Github.logout )
                      )
                 )
 //                     new Task(
