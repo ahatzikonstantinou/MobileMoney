@@ -8,6 +8,13 @@ public class CredentialsProvider implements ICredentialsProvider
 {
     private String username;
     private String password;
+
+    public CredentialsProvider( String username, String password )
+    {
+        this.username = username;
+        this.password = password;
+    }
+
     public CredentialsProvider()
     {
     }

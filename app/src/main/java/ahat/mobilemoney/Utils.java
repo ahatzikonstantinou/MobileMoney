@@ -12,6 +12,8 @@ import java.util.List;
 
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankService;
+import ahat.mobilemoney.Banking.BankTaskRunner;
+import ahat.mobilemoney.Banking.Task;
 import ahat.mobilemoney.Banking.TaskDefinition;
 
 /**
@@ -73,12 +75,13 @@ public class Utils
     /**
      * Runs a task as an AsyncTask. The asynctask starts a dialog, the executes the task's steps, updates the dialog at each step
      * or the dialog may cancel the asynctask onClickCancel
-     * @param parent
+     * @param parentActivity
      * @param task
+     * @param title
      */
-    public static void RunTask( AppCompatActivity parentActivity, TaskDefinition task, String title )
+    public static void RunTask( AppCompatActivity parentActivity, Task task, String title )
     {
-        BankTaskAsync bta = new BankTaskAsync( parentActivity, task, title );
+        BankTaskAsync bta = new BankTaskAsync( parentActivity, task, title, new BankTaskRunner() );
         bta.execute();
     }
 

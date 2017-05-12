@@ -12,14 +12,13 @@ public class StepBuilder
     private final CredentialsProvider credentialsProvider;
     private final Context context;
 
-    public StepBuilder( StepDefinition stepDefinition, CredentialsProvider credentialsProvider, Context context )
+    public StepBuilder( CredentialsProvider credentialsProvider, Context context )
     {
-        this.stepDefinition = stepDefinition;
         this.credentialsProvider = credentialsProvider;
         this.context = context;
     }
 
-    public UrlStep build()
+    public UrlStep build( StepDefinition stepDefinition )
     {
         return new UrlStep(
             stepDefinition.code,

@@ -25,7 +25,7 @@ public class Platform
 
         return Arrays.asList(
             //Test using github
-            new BankDefinition( 3, "Alpha Bank", "00A", false,
+            new BankDefinition( 4, "Alpha Bank", "00A", false,
                 Arrays.asList(
                      new TaskDefinition(
                          Task.Code.TestLogin,

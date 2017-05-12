@@ -27,7 +27,7 @@ public class TaskDefinitions
               "login",
               "login",
               "https://github.com/login",
-              "<input.*id=\"login_field\" name=\"login\".*\\/>[.\\s\\S]*<input.*id=\"password\" name=\"password\".*\\/>[.\\s\\S]*<input.*name=\"commit\".*\\/>",
+              "input class=\"form-control\" type=\"email\" name=\"login\".*input class=\"form-control\" type=\"password\" name=\"password\"",
               StepDefinition.UrlProvider.Static,
               StepDefinition.ResultAction.Continue,
               StepDefinition.ResultAction.TerminateTask

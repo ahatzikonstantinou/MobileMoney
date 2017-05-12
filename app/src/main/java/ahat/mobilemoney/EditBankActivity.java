@@ -24,7 +24,10 @@ import android.widget.Toast;
 import ahat.mobilemoney.Banking.BankDTO;
 import ahat.mobilemoney.Banking.BankDefinition;
 import ahat.mobilemoney.Banking.BankService;
+import ahat.mobilemoney.Banking.CredentialsProvider;
+import ahat.mobilemoney.Banking.StepBuilder;
 import ahat.mobilemoney.Banking.Task;
+import ahat.mobilemoney.Banking.TaskBuilder;
 import ahat.mobilemoney.Banking.TaskDefinition;
 import ahat.mobilemoney.Banking.UserCredentials;
 
@@ -416,7 +419,8 @@ public class EditBankActivity extends AppCompatActivity {
             return;
         }
 
-        Utils.RunTask( this, task, taskName );
+        TaskBuilder taskBuilder = new TaskBuilder( new StepBuilder( new CredentialsProvider( userCredentials.getUsername(), userCredentials.getPassword() ), this ) );
+        Utils.RunTask( this, taskBuilder.build( task ), taskName );
     }
 
     private void askDeleteBank()

@@ -9,8 +9,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import ahat.mobilemoney.Banking.Step;
 import ahat.mobilemoney.Banking.StepDefinition;
+import ahat.mobilemoney.Banking.Task;
 import ahat.mobilemoney.Banking.TaskDefinition;
+import ahat.mobilemoney.Banking.UrlStep;
 
 /**
  * Created by antonis on 23/3/2017.
@@ -18,21 +21,21 @@ import ahat.mobilemoney.Banking.TaskDefinition;
 
 public class TaskExecuteDialogListAdapter extends BaseAdapter
 {
-    private Context        context;
-    private TaskDefinition task;
-    private int            runningStep;
-    private StepExecutionStatus[]      results;
+    private Context               context;
+    private Task                  task;
+    private int                   runningStep;
+    private StepExecutionStatus[] results;
 
     public void setRunningStep( int value ) { runningStep = value; }
     public int getRunningStep(){ return runningStep; }
 
-    public void setTask( TaskDefinition task ){ this.task = task; }
-    public TaskDefinition getTask(){ return task; }
+    public void setTask( Task task ){ this.task = task; }
+    public Task getTask(){ return task; }
 
     public StepExecutionStatus[] getResults(){ return results; }
     public void setResults( StepExecutionStatus[] results ){ this.results = results; }
 
-    public TaskExecuteDialogListAdapter( Context context, TaskDefinition task, int runningStep )
+    public TaskExecuteDialogListAdapter( Context context, Task task, int runningStep )
     {
         this.context = context;
         this.task = task;
@@ -99,10 +102,10 @@ public class TaskExecuteDialogListAdapter extends BaseAdapter
         LayoutInflater inflater = LayoutInflater.from( context );
         if( convertView == null )
         {
-            StepDefinition s = task.getSteps().get( position );
+            Step s = task.getSteps().get( position );
             convertView = inflater.inflate( R.layout.task_execution_step, null );
             TextView stepTV = (TextView) convertView.findViewById( R.id.textViewStep );
-            stepTV.setText( s.name );
+            stepTV.setText( s.getName() );
 
             ProgressBar pb = (ProgressBar) convertView.findViewById( R.id.progressBar );
             ImageView ivsf = (ImageView) convertView.findViewById( R.id.imageViewStepFail );

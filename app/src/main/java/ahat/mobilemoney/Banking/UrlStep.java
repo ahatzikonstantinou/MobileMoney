@@ -8,6 +8,8 @@ import android.webkit.WebViewClient;
 
 public class UrlStep extends Step
 {
+    private static final long serialVersionUID = 1l;
+
     private final IUrlProvider urlProvider;
     private WebView webView;
     private HtmlProxy htmlProxy;
@@ -32,6 +34,7 @@ public class UrlStep extends Step
         if( null == webView )
         {
             setupWebView();
+//            webView = runner.getWebView();
         }
 
         //prepare the htmlproxy that will call back this step when the url/page has loaded
@@ -40,7 +43,7 @@ public class UrlStep extends Step
         webView.loadUrl( urlProvider.getUrl() );
     }
 
-    public void onHtmlReady( String html )
+    public void onHtmlReady( String html ) throws Exception
     {
         //check success
         boolean success = html.matches( regex );
@@ -73,15 +76,19 @@ public class UrlStep extends Step
     {
         if( null == htmlProxy )
         {
-            htmlProxy = new HtmlProxy();
+            htmlProxy = new HtmlProxy( this );
         }
+//        else
+//        {
+//            htmlProxy.setStep( this );
+//        }
         WebView wv = new WebView( context );
         wv.getSettings().setUseWideViewPort( true );
         wv.getSettings().setLoadWithOverviewMode( true );
         wv.setInitialScale( 70 );
         wv.getSettings().setJavaScriptEnabled( true );
         wv.getSettings().setDomStorageEnabled( true );
-        wv.addJavascriptInterface( new HtmlProxy(), "HTMLOUT" );
+        wv.addJavascriptInterface( htmlProxy, "HTMLOUT" );
         wv.setWebViewClient(
             new WebViewClient()
             {
@@ -89,10 +96,27 @@ public class UrlStep extends Step
                 public void onPageFinished( WebView view, String url )
                 {
                     super.onPageFinished( view, url );
-                    wv.loadUrl("javascript:window.HTMLOUT.processHTML('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+//                    wv.loadUrl("javascript:window.HTMLOUT.processHtml('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+                    wv.evaluateJavascript(
+                        "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                        new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String html) {
+//                                Log.d("HTML", html);
+                                try
+                                {
+                                    onHtmlReady( html );
+                                }
+                                catch( Exception e )
+                                {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                 }
 
             } );
+        this.webView = wv;
     }
 
     public WebView getWebView()

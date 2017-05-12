@@ -12,8 +12,9 @@ import android.webkit.JavascriptInterface;
 public class HtmlProxy
 {
     private UrlStep step;
-    public HtmlProxy()
+    public HtmlProxy( UrlStep step )
     {
+        this.step = step;
     }
 
     public UrlStep getStep()
@@ -27,7 +28,7 @@ public class HtmlProxy
     }
 
     @JavascriptInterface
-    public void processHtml( String html )
+    public void processHtml( String html ) throws Exception
     {
         step.onHtmlReady( html );
     }
