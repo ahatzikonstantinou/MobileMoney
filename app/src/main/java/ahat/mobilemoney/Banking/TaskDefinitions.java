@@ -13,6 +13,7 @@ public class TaskDefinitions
         {
             this.login = login;
             this.credentials = credentials;
+            this.submit = submit;
             this.logout = logout;
         }
 
@@ -27,7 +28,7 @@ public class TaskDefinitions
               "login",
               "login",
               "https://github.com/login",
-              "input class=\"form-control\" type=\"email\" name=\"login\".*input class=\"form-control\" type=\"password\" name=\"password\"",
+              ".*input class=\"form-control\" type=\"email\" name=\"login\".*input class=\"form-control\" type=\"password\" name=\"password\".*",
               StepDefinition.UrlProvider.Static,
               StepDefinition.ResultAction.Continue,
               StepDefinition.ResultAction.TerminateTask
@@ -36,7 +37,7 @@ public class TaskDefinitions
                 "credentials",
                 "credentials",
                 "javascript:document.getElementById('login_field').value='" + CredentialsUrlProvider.UsernamePlaceholder + "';document.getElementById('password').value='" + CredentialsUrlProvider.PasswordPlaceholder + "';document.getElementsByName('commit')[0].click();",
-                "<input.*id=\"login_field\" name=\"login\".*\\/>[.\\s\\S]*<input.*id=\"password\" name=\"password\".*\\/>[.\\s\\S]*<input.*name=\"commit\".*\\/>",
+                ".*<input.*id=\"login_field\" name=\"login\".*\\/>[.\\s\\S]*<input.*id=\"password\" name=\"password\".*\\/>[.\\s\\S]*<input.*name=\"commit\".*\\/>.*",
                 StepDefinition.UrlProvider.Credentials,
                 StepDefinition.ResultAction.Continue,
                 StepDefinition.ResultAction.GotoLast
@@ -45,7 +46,7 @@ public class TaskDefinitions
                 "submit",
                 "submit",
                 "javascript:document.getElementsByName('commit')[0].click();",
-                "<button type=\"submit\" class=\"dropdown-item dropdown-signout\" data-ga-click=\"Header, sign out, icon:logout\">",
+                ".*<button type=\"submit\" class=\"dropdown-item dropdown-signout\" data-ga-click=\"Header, sign out, icon:logout\">.*",
                 StepDefinition.UrlProvider.Credentials,
                 StepDefinition.ResultAction.Continue,
                 StepDefinition.ResultAction.GotoLast
@@ -54,7 +55,7 @@ public class TaskDefinitions
                 "logout",
                 "logout",
                 "javascript:document.getElementsByClassName('dropdown-signout').click()",
-                "<a class=\"text-bold site-header-link\" href=\"\\/login\".*<\\/a>",
+                ".*<a class=\"text-bold site-header-link\" href=\"\\/login\".*<\\/a>.*",
                 StepDefinition.UrlProvider.Static,
                 StepDefinition.ResultAction.TerminateTask,
                 StepDefinition.ResultAction.TerminateTask

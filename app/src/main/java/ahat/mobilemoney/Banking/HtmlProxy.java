@@ -12,9 +12,8 @@ import android.webkit.JavascriptInterface;
 public class HtmlProxy
 {
     private UrlStep step;
-    public HtmlProxy( UrlStep step )
+    public HtmlProxy()
     {
-        this.step = step;
     }
 
     public UrlStep getStep()

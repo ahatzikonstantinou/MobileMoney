@@ -25,7 +25,7 @@ public class Platform
 
         return Arrays.asList(
             //Test using github
-            new BankDefinition( 4, "Alpha Bank", "00A", false,
+            new BankDefinition( 2, "Alpha Bank", "00A", false,
                 Arrays.asList(
                      new TaskDefinition(
                          Task.Code.TestLogin,
@@ -78,7 +78,7 @@ public class Platform
             boolean add = true;
             for( BankShort l : localBanks )
             {
-                if( l.getCode().equals( r.getCode() ) && l.getVersion() >= r.getVersion() )
+                if( l.getCode().equals( r.getCode() ) && l.getVersion() == r.getVersion() )
                 {
                     add = false;
                     break;

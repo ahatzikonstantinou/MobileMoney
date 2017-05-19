@@ -2,19 +2,27 @@ package ahat.mobilemoney.Banking;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UrlStep extends Step
 {
     private static final long serialVersionUID = 1l;
 
-    private final IUrlProvider urlProvider;
-    private WebView webView;
-    private HtmlProxy htmlProxy;
-    private android.content.Context context;
-    private BankTaskRunner runner;
+    private final IUrlProvider            urlProvider;
+    private       WebView                 webView;
+    private       HtmlProxy               htmlProxy;
+    private       android.content.Context context;
+    private       BankTaskRunner          runner;
 
     public UrlStep( String code, String name, String regex, IUrlProvider urlProvider, IResultStepAction onSuccess, IResultStepAction onFail, Context context )
     {
@@ -33,12 +41,13 @@ public class UrlStep extends Step
         this.runner = runner;
         if( null == webView )
         {
-            setupWebView();
-//            webView = runner.getWebView();
+//            setupWebView();
+            webView = runner.getWebView();
         }
 
         //prepare the htmlproxy that will call back this step when the url/page has loaded
-        htmlProxy.setStep( this );
+//        htmlProxy.setStep( this );
+        this.runner.getHtmlProxy().setStep( this );
         //load url
         webView.loadUrl( urlProvider.getUrl() );
     }
@@ -46,11 +55,12 @@ public class UrlStep extends Step
     public void onHtmlReady( String html ) throws Exception
     {
         //check success
-        boolean success = html.matches( regex );
+        boolean success = Pattern.compile( regex, Pattern.MULTILINE | Pattern.DOTALL ).matcher( html ).matches();
 
         Step nextStep;
         if( success )
         {
+            runner.stepSucceeded();
             if( null != onSuccess )
             {
                 onSuccess.execute( this, runner );
@@ -58,6 +68,7 @@ public class UrlStep extends Step
         }
         else
         {
+            runner.stepFailed();
             if( null != onFail )
             {
                 onFail.execute( this, runner );
@@ -69,14 +80,14 @@ public class UrlStep extends Step
         {
             ( ( UrlStep ) nextStep ).setWebView( webView );
         }
-        runner.run();
+//        runner.run();
     }
 
     private void setupWebView()
     {
         if( null == htmlProxy )
         {
-            htmlProxy = new HtmlProxy( this );
+            htmlProxy = new HtmlProxy();
         }
 //        else
 //        {
@@ -97,22 +108,48 @@ public class UrlStep extends Step
                 {
                     super.onPageFinished( view, url );
 //                    wv.loadUrl("javascript:window.HTMLOUT.processHtml('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
-                    wv.evaluateJavascript(
-                        "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
-                        new ValueCallback<String>() {
-                            @Override
-                            public void onReceiveValue(String html) {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    {
+                        wv.evaluateJavascript(
+                            "(function() { return decodeURIComponent('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                            new ValueCallback<String>()
+                            {
+                                @Override
+                                public void onReceiveValue( String html )
+                                {
+                                    //ahat: see http://stackoverflow.com/questions/19788294/how-does-evaluatejavascript-work
+                                    JsonReader reader = new JsonReader( new StringReader( html ));
+                                    // Must set lenient to parse single values
+                                    reader.setLenient(true);
 //                                Log.d("HTML", html);
-                                try
-                                {
-                                    onHtmlReady( html );
+                                    try
+                                    {
+                                        if(reader.peek() != JsonToken.NULL) {
+                                            if( reader.peek() == JsonToken.STRING) {
+                                                String msg = reader.nextString();
+                                                if(msg != null) {
+                                                    onHtmlReady( html );
+//                                                    Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    catch( Exception e )
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    finally
+                                    {
+                                        try {
+                                            reader.close();
+                                        } catch (IOException e) {
+                                            // NOOP
+                                        }
+                                    }
                                 }
-                                catch( Exception e )
-                                {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
+                            } );
+                    }
                 }
 
             } );

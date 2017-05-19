@@ -285,6 +285,7 @@ public class BankTaskAsync extends AsyncTask<Void, StepExecutionStatus, Boolean>
                 publishProgress( results );
             }
         } );
+        stepExecutionFinished[0] = true;
     }
 
     @Override
